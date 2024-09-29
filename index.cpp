@@ -158,7 +158,7 @@ int get_no_of_lines(ifstream &User_data);
 void Update_users(vector<Users> &users);
 void Update_Books(vector<Books> &books);
 int does_the_user_exists(vector<Users> &users, string id);
-bool does_the_book_exists(vector<Books> &books, string name);
+int does_the_book_exists(vector<Books> &books, string name);
 
 int current_no = 0;
 
@@ -353,17 +353,26 @@ int does_the_user_exists(vector<Users> &users, string id)
     }
     return -1;
 }
-bool does_the_book_exists(vector<Books> &books, string name)
+int does_the_book_exists(vector<Books> &books, string name)
 {
-    cout << "does_the_user_exists called" << endl;
+    cout << "does_the_book_exists called name = " << name << endl;
+    cout << "current_no_books = " << current_no_books << endl;
     int i = 0;
-    string upper_name = name, lower_name = name;
+    string upper_name = name, lower_name = name, s1 = "",s2="";
     transform(upper_name.begin(), upper_name.end(), upper_name.begin(), ::toupper);
     transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);
-    while (i <= current_no_books)
+    cout << "upper_name = " << upper_name << endl;
+    cout << "lower_name = " << lower_name << endl;
+    while (i < current_no_books)
     {
-        if (books[i].name == upper_name || books[i].name == lower_name)
+        cout << "i = " << i << endl;
+        cout << "books[i].name = " << books[i].name << endl;
+        s1 = books[i].name, s2 = books[i].name;
+        transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
+        transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
+        if (s1 == upper_name || s2 == lower_name)
         {
+            cout << "returning = " << i << endl;
             return i;
         }
         i++;
@@ -383,15 +392,15 @@ int main()
     {
         cout << " *************************************************** " << endl
              << endl;
-        cout << "> Enter 0 to exit" << endl;
-        cout << "> Enter 1 to Add Book" << endl;
+        cout << "> Enter 0 to exit" << endl;     // DONE
+        cout << "> Enter 1 to Add Book" << endl; // DONE
         cout << "> Enter 2 to Remove Book" << endl;
-        cout << "> Enter 3 to Add User" << endl;
+        cout << "> Enter 3 to Add User" << endl; // DONE
         cout << "> Enter 4 to Remove User" << endl;
         cout << "> Enter 5 to Allocate Book to User" << endl;
         cout << "> Enter 6 to Deallocate Book to User" << endl;
-        cout << "> Enter 7 to History of User" << endl;
-        cout << "> Enter 8 to History of Book" << endl
+        cout << "> Enter 7 to History of User" << endl; // DONE
+        cout << "> Enter 8 to History of Book" << endl  // WORKING
              << endl;
         cout << " *************************************************** " << endl;
         cout << " Enter your choice :: ";
