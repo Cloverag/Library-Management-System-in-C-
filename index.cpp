@@ -268,13 +268,14 @@ void Add_User(vector<Users> users)
     ofstream User_data_edit("User_data.csv", ios::app);
     string s = "", name, id, phone, email;
     cout << "Name : ";
-    cin >> name;
+    cin.ignore();
+    getline(cin, name);
     cout << "ID : ";
-    cin >> id;
+    getline(cin, id);
     cout << "Phone : ";
-    cin >> phone;
+    getline(cin, phone);
     cout << "Email : ";
-    cin >> email;
+    getline(cin, email);
     Users temp(name, id, phone, email);
     users.push_back(temp);
     users[current_no_users].display_user_data();
