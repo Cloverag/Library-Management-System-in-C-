@@ -82,6 +82,12 @@ public:
         cout << "name = " << this->name << ", id = " << this->id << ", phone = " << this->phone << ", email = " << this->email << ", current_books_no = " << this->current_books_no << ", all_books_no = " << this->all_books_no << ", current_books_names = " << this->current_books_names << ", all_books_names = " << this->all_books_names << endl
              << endl;
     }
+    string get_data_in_string()
+    {
+        string s = "";
+        s = name + "," + id + "," + phone + "," + email + "," + to_string(current_books_no) + "," + to_string(all_books_no) + "," + to_string(current_books_names) + "," + to_string(all_books_names);
+        return s;
+    }
 };
 class Books
 {
@@ -133,6 +139,12 @@ public:
         cout << "name = " << this->name << ", author = " << this->author << ", genre = " << this->genre << ", subject = " << this->subject << ", overall_allocate_users = " << this->overall_allocate_users << ", ongoing_allocate_users = " << this->ongoing_allocate_users << endl;
         cout << endl;
     }
+    string get_data_in_string()
+    {
+        string s = "";
+        s = name + "," + author + "," + genre + "," + subject + "," + to_string(overall_allocate_users) + "," + to_string(ongoing_allocate_users);
+        return s;
+    }
 };
 
 void Add_Book(vector<Books> books);
@@ -151,6 +163,8 @@ void show_all_users(vector<Users> users);
 void show_all_books(vector<Books> books);
 void Remove_user_from_csv(vector<Users> users, string id);
 void Remove_book_from_csv(vector<Books> books, string name);
+void Update_csv_from_users(vector<Users> users);
+void Update_csv_from_books(vector<Books> books);
 
 int current_no = 0;
 
@@ -552,6 +566,35 @@ void Remove_book_from_csv(vector<Books> books, string name)
     Book_data_edit.close();
 }
 
+void Update_csv_from_users(vector<Users> users)
+{
+    ofstream User_data_edit("User_data.csv");
+    User_data_edit << "NAME,ID_NO,PHONE_NO,EMAIL_ID,CURRENT_BOOKS_NO,ALL_BOOKS_NO,CURRENT_BOOKS_NAMES,ALL_BOOKS_NAMES" << endl;
+    string s = "";
+    int i = 0;
+    while (i < users.size())
+    {
+        s = users[i].get_data_in_string();
+        User_data_edit << s << endl;
+        i++;
+    }
+    User_data_edit.close();
+}
+void Update_csv_from_books(vector<Books> books)
+{
+    ofstream Book_data_edit("Book_data.csv");
+    Book_data_edit << "BOOK_NAME,AUTHOR,GENRE,SUBJECT,OV_ALLOCATED_USER_NO,ONGOING_ALLOCATED_USER_NO" << endl;
+    string s = "";
+    int i = 0;
+    while (i < books.size())
+    {
+        s = books[i].get_data_in_string();
+        Book_data_edit << s << endl;
+        i++;
+    }
+    Book_data_edit.close();
+}
+
 int main()
 {
     vector<Users> users;
@@ -564,17 +607,19 @@ int main()
     {
         cout << " *************************************************** " << endl
              << endl;
-        cout << "> Enter 0 to exit" << endl;        // DONE
-        cout << "> Enter 1 to Add Book" << endl;    // DONE
-        cout << "> Enter 2 to Remove Book" << endl; // DONE
-        cout << "> Enter 3 to Add User" << endl;    // DONE
-        cout << "> Enter 4 to Remove User" << endl; // DONE
-        cout << "> Enter 5 to Allocate Book to User" << endl;
-        cout << "> Enter 6 to Deallocate Book to User" << endl;
-        cout << "> Enter 7 to History of User" << endl; // DONE
-        cout << "> Enter 8 to History of Book" << endl; // DONE
-        cout << "> Enter 9 to Show all Users" << endl;  // DONE
-        cout << "> Enter 10 to Show all Books" << endl  // DONE
+        cout << "> Enter 0 to exit" << endl;                    // DONE
+        cout << "> Enter 1 to Add Book" << endl;                // DONE
+        cout << "> Enter 2 to Remove Book" << endl;             // DONE
+        cout << "> Enter 3 to Add User" << endl;                // DONE
+        cout << "> Enter 4 to Remove User" << endl;             // DONE
+        cout << "> Enter 5 to Allocate Book to User" << endl;   // WORKING
+        cout << "> Enter 6 to Deallocate Book to User" << endl; // WORKING
+        cout << "> Enter 7 to History of User" << endl;         // DONE
+        cout << "> Enter 8 to History of Book" << endl;         // DONE
+        cout << "> Enter 9 to Show all Users" << endl;          // DONE
+        cout << "> Enter 10 to Show all Books" << endl;         // DONE
+        cout << "> Enter 11 to Update csv from users" << endl;  // DONE
+        cout << "> Enter 12 to Update csv from books" << endl   // DONE
              << endl;
         cout << " *************************************************** " << endl;
         cout << " Enter your choice :: ";
@@ -619,6 +664,12 @@ int main()
             break;
         case 10:
             show_all_books(books);
+            break;
+        case 11:
+            Update_csv_from_users(users);
+            break;
+        case 12:
+            Update_csv_from_books(books);
             break;
         default:
             cout << "Invalid Input" << endl;
