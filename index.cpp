@@ -145,7 +145,7 @@ public:
     }
 };
 
-void Add_Book();
+void Add_Book(vector<Books> books);
 void Remove_Book();
 void Add_User(vector<Users> users);
 void Remove_User();
@@ -158,7 +158,8 @@ void Update_Books(vector<Books> &books);
 
 int current_no = 0;
 
-void Update_Books(vector<Books> &books){
+void Update_Books(vector<Books> &books)
+{
     cout << "Update_Books called" << endl;
     ifstream User_data("Book_data.csv");
     string s = "";
@@ -233,25 +234,29 @@ int get_no_of_lines(ifstream &file_name)
     return no_of_lines;
 }
 
-void Add_Book()
+void Add_Book(vector<Books> books)
 {
     ifstream Book_data("Book_data.csv");
-    int no_of_lines = get_no_of_lines(Book_data);
-    cout << "no_of_lines = " << no_of_lines << endl;
-    string s = "", Name = "", Author = "", Genre = "";
+    string s = "", Name, Author = "", Subject = "", Genre = "";
     cout << "Book Name : ";
-    cin >> Name;
+    cin.ignore();
+    getline(cin, Name);
     cout << "Author : ";
-    cin >> Author;
+    getline(cin, Author);
     cout << "GENRE : ";
-    cin >> Genre;
+    getline(cin, Genre);
+    cout << "SUBJECT : ";
+    getline(cin, Subject);
     cout << "before s = " << s << endl;
-    s = to_string(no_of_lines) + "," + Name + "," + Author + "," + Genre + ",0,0\n";
+    s = Name + "," + Author + "," + Genre + "," + Subject + ",0,0\n";
     Book_data.close();
+    Books temp(Name, Author, Genre, Subject);
+    books.push_back(temp);
+    books[current_no_books].display_book_data();
+    current_no_books++;
     ofstream Book_data_edit("Book_data.csv", ios::app);
-    cout << "after s = " << s << endl;
-
     Book_data_edit << s;
+    Book_data_edit.close();
 }
 void Remove_Book()
 {
@@ -324,7 +329,7 @@ int main()
             return 0;
             break;
         case 1:
-            Add_Book();
+            Add_Book(books);
             break;
         case 2:
             Remove_Book();
