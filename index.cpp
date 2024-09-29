@@ -5,7 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <typeinfo>
-// #include <stdc++.h>
+
 using namespace std;
 
 int current_no_users = 0;
@@ -79,14 +79,7 @@ public:
     {
         cout << endl
              << "display_user_data called" << endl;
-        cout << "name = " << this->name << endl;
-        cout << "id = " << this->id << endl;
-        cout << "phone = " << this->phone << endl;
-        cout << "email = " << this->email << endl;
-        cout << "current_books_no = " << this->current_books_no << endl;
-        cout << "all_books_no = " << this->all_books_no << endl;
-        cout << "current_books_names = " << this->current_books_names << endl;
-        cout << "all_books_names = " << this->all_books_names << endl
+        cout << "name = " << this->name << ", id = " << this->id << ", phone = " << this->phone << ", email = " << this->email << ", current_books_no = " << this->current_books_no << ", all_books_no = " << this->all_books_no << ", current_books_names = " << this->current_books_names << ", all_books_names = " << this->all_books_names << endl
              << endl;
     }
 };
@@ -137,20 +130,15 @@ public:
     {
         cout << endl
              << "display_user_data called" << endl;
-        cout << "name = " << this->name << endl;
-        cout << "author = " << this->author << endl;
-        cout << "genre = " << this->genre << endl;
-        cout << "subject = " << this->subject << endl;
-        cout << "overall_allocate_users = " << this->overall_allocate_users << endl;
-        cout << "ongoing_allocate_users = " << this->ongoing_allocate_users << endl
-             << endl;
+        cout << "name = " << this->name << ", author = " << this->author << ", genre = " << this->genre << ", subject = " << this->subject << ", overall_allocate_users = " << this->overall_allocate_users << ", ongoing_allocate_users = " << this->ongoing_allocate_users << endl;
+        cout << endl;
     }
 };
 
 void Add_Book(vector<Books> books);
-void Remove_Book();
+vector<Books> Remove_Book(vector<Books> books);
 void Add_User(vector<Users> users);
-void Remove_User();
+vector<Users> Remove_User(vector<Users> users);
 void Allocate_Book_to_User();
 void Deallocate_Book_to_User();
 void History_of_User(vector<Users> users, string id);
@@ -159,6 +147,8 @@ void Update_users(vector<Users> &users);
 void Update_Books(vector<Books> &books);
 int does_the_user_exists(vector<Users> &users, string id);
 int does_the_book_exists(vector<Books> &books, string name);
+void show_all_users(vector<Users> users);
+void show_all_books(vector<Books> books);
 
 int current_no = 0;
 
@@ -262,9 +252,32 @@ void Add_Book(vector<Books> books)
     Book_data_edit << s;
     Book_data_edit.close();
 }
-void Remove_Book()
+vector<Books> Remove_Book(vector<Books> books)
 {
     cout << "Remove_Book called" << endl;
+    string name;
+    cout << "Name: ";
+    cin >> name;
+    int i = 0;
+    while (i < books.size())
+    {
+        string lower_b_n = books[i].name, lname = name;
+        transform(lower_b_n.begin(), lower_b_n.end(), lower_b_n.begin(), ::tolower);
+        transform(lname.begin(), lname.end(), lname.begin(), ::tolower);
+        if (lower_b_n == lname)
+        {
+            books.erase(books.begin() + i);
+            current_no_books--;
+            show_all_books(books);
+            break;
+        }
+        i++;
+        if (i == books.size())
+        {
+            cout << "User not found!!!!" << endl;
+        }
+    }
+    return books;
 }
 void Add_User(vector<Users> users)
 {
@@ -297,9 +310,32 @@ void Add_User(vector<Users> users)
         User_data_edit.close();
     }
 }
-void Remove_User()
+vector<Users> Remove_User(vector<Users> users)
 {
     cout << "Remove_User called" << endl;
+    string Id;
+    cout << "Id: ";
+    cin >> Id;
+    int i = 0;
+    while (i < users.size())
+    {
+        string lower_u_i = users[i].id, lid = Id;
+        transform(lower_u_i.begin(), lower_u_i.end(), lower_u_i.begin(), ::tolower);
+        transform(lid.begin(), lid.end(), lid.begin(), ::tolower);
+        if (users[i].id == Id)
+        {
+            users.erase(users.begin() + i);
+            current_no_users--;
+            show_all_users(users);
+            break;
+        }
+        i++;
+        if (i == users.size())
+        {
+            cout << "User not found!!!!" << endl;
+        }
+    }
+    return users;
 }
 void Allocate_Book_to_User()
 {
@@ -358,7 +394,7 @@ int does_the_book_exists(vector<Books> &books, string name)
     cout << "does_the_book_exists called name = " << name << endl;
     cout << "current_no_books = " << current_no_books << endl;
     int i = 0;
-    string upper_name = name, lower_name = name, s1 = "",s2="";
+    string upper_name = name, lower_name = name, s1 = "", s2 = "";
     transform(upper_name.begin(), upper_name.end(), upper_name.begin(), ::toupper);
     transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);
     cout << "upper_name = " << upper_name << endl;
@@ -375,9 +411,33 @@ int does_the_book_exists(vector<Books> &books, string name)
             cout << "returning = " << i << endl;
             return i;
         }
+
         i++;
     }
     return -1;
+}
+
+void show_all_users(vector<Users> users)
+{
+    int i = 0;
+    cout << "users.size() = " << users.size() << endl;
+    while (i < users.size())
+    {
+        cout << "i = " << i << " - ";
+        users[i].display_user_data();
+        i++;
+    }
+}
+void show_all_books(vector<Books> books)
+{
+    int i = 0;
+    cout << "books.size() = " << books.size() << endl;
+    while (i < books.size())
+    {
+        cout << "i = " << i << " - ";
+        books[i].display_book_data();
+        i++;
+    }
 }
 
 int main()
@@ -394,13 +454,15 @@ int main()
              << endl;
         cout << "> Enter 0 to exit" << endl;     // DONE
         cout << "> Enter 1 to Add Book" << endl; // DONE
-        cout << "> Enter 2 to Remove Book" << endl;
-        cout << "> Enter 3 to Add User" << endl; // DONE
-        cout << "> Enter 4 to Remove User" << endl;
+        cout << "> Enter 2 to Remove Book" << endl; // DONE
+        cout << "> Enter 3 to Add User" << endl;    // DONE
+        cout << "> Enter 4 to Remove User" << endl; // DONE
         cout << "> Enter 5 to Allocate Book to User" << endl;
         cout << "> Enter 6 to Deallocate Book to User" << endl;
         cout << "> Enter 7 to History of User" << endl; // DONE
-        cout << "> Enter 8 to History of Book" << endl  // WORKING
+        cout << "> Enter 8 to History of Book" << endl; // DONE
+        cout << "> Enter 9 to Show all Users" << endl;  // DONE
+        cout << "> Enter 10 to Show all Books" << endl  // DONE
              << endl;
         cout << " *************************************************** " << endl;
         cout << " Enter your choice :: ";
@@ -414,13 +476,13 @@ int main()
             Add_Book(books);
             break;
         case 2:
-            Remove_Book();
+            books = Remove_Book(books);
             break;
         case 3:
             Add_User(users);
             break;
         case 4:
-            Remove_User();
+            users = Remove_User(users);
             break;
         case 5:
             Allocate_Book_to_User();
@@ -439,6 +501,12 @@ int main()
             cout << "Name of book to find: ";
             getline(cin, name);
             History_of_Book(books, name);
+            break;
+        case 9:
+            show_all_users(users);
+            break;
+        case 10:
+            show_all_books(books);
             break;
         default:
             cout << "Invalid Input" << endl;
