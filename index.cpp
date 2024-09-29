@@ -149,6 +149,8 @@ int does_the_user_exists(vector<Users> &users, string id);
 int does_the_book_exists(vector<Books> &books, string name);
 void show_all_users(vector<Users> users);
 void show_all_books(vector<Books> books);
+void Remove_user_from_csv(vector<Users> users, string id);
+void Remove_book_from_csv(vector<Books> books, string name);
 
 int current_no = 0;
 
@@ -268,6 +270,7 @@ vector<Books> Remove_Book(vector<Books> books)
         {
             books.erase(books.begin() + i);
             current_no_books--;
+            Remove_book_from_csv(books, name);
             show_all_books(books);
             break;
         }
@@ -327,6 +330,7 @@ vector<Users> Remove_User(vector<Users> users)
             users.erase(users.begin() + i);
             current_no_users--;
             show_all_users(users);
+            Remove_user_from_csv(users, Id);
             break;
         }
         i++;
@@ -440,6 +444,114 @@ void show_all_books(vector<Books> books)
     }
 }
 
+void Remove_user_from_csv(vector<Users> users, string id)
+{
+
+    cout << "Remove_user_from_csv called" << endl;
+    vector<string> lines;
+    string s = "", header;
+    ifstream User_data("User_data.csv");
+    string arr[8], lower_id = id, lower_arr2;
+    getline(User_data, header);
+    s = "";
+    while (getline(User_data, s))
+    {
+        cout << s << endl;
+        stringstream ss(s);
+        string word;
+        char del = ',';
+        int i = 0;
+        while (getline(ss, word, del))
+        {
+            cout << word << " - ";
+            arr[i] = word;
+            i++;
+        }
+        cout << "while loop completed" << endl;
+        lower_arr2 = arr[1];
+        cout << "lower_arr2 = " << lower_arr2 << endl;
+        transform(lower_id.begin(), lower_id.end(), lower_id.begin(), ::tolower);
+        transform(lower_arr2.begin(), lower_arr2.end(), lower_arr2.begin(), ::tolower);
+        cout << "lower_arr2 = " << lower_arr2 << endl;
+        cout << "lower_id = " << lower_id << endl;
+        if (lower_arr2 == lower_id)
+        {
+            cout << "if statement called" << endl;
+            continue;
+        }
+        else
+        {
+            lines.push_back(s);
+        }
+    }
+    User_data.close();
+    ofstream User_data_edit("User_data.csv");
+    int i = 0;
+    User_data_edit << header << endl;
+    cout << "lines ::" << endl
+         << endl;
+    while (i < lines.size())
+    {
+        User_data_edit << lines[i] << endl;
+        cout << lines[i] << endl;
+        i++;
+    }
+    User_data_edit.close();
+}
+void Remove_book_from_csv(vector<Books> books, string name)
+{
+    cout << "Remove_book_from_csv called" << endl;
+    vector<string> lines;
+    string s = "", header;
+    ifstream Book_data("Book_data.csv");
+    string arr[8], lower_name = name, lower_arr0;
+    getline(Book_data, header);
+    s = "";
+    while (getline(Book_data, s))
+    {
+        cout << s << endl;
+        stringstream ss(s);
+        string word;
+        char del = ',';
+        int i = 0;
+        while (getline(ss, word, del))
+        {
+            cout << word << " - ";
+            arr[i] = word;
+            i++;
+        }
+        cout << "while loop completed" << endl;
+        lower_arr0 = arr[0];
+        cout << "lower_arr0 = " << lower_arr0 << endl;
+        transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);
+        transform(lower_arr0.begin(), lower_arr0.end(), lower_arr0.begin(), ::tolower);
+        cout << "lower_arr0 = " << lower_arr0 << endl;
+        cout << "lower_id = " << lower_name << endl;
+        if (lower_arr0 == lower_name)
+        {
+            cout << "if statement called" << endl;
+            continue;
+        }
+        else
+        {
+            lines.push_back(s);
+        }
+    }
+    Book_data.close();
+    ofstream Book_data_edit("Book_data.csv");
+    int i = 0;
+    Book_data_edit << header << endl;
+    cout << "lines ::" << endl
+         << endl;
+    while (i < lines.size())
+    {
+        Book_data_edit << lines[i] << endl;
+        cout << lines[i] << endl;
+        i++;
+    }
+    Book_data_edit.close();
+}
+
 int main()
 {
     vector<Users> users;
@@ -452,8 +564,8 @@ int main()
     {
         cout << " *************************************************** " << endl
              << endl;
-        cout << "> Enter 0 to exit" << endl;     // DONE
-        cout << "> Enter 1 to Add Book" << endl; // DONE
+        cout << "> Enter 0 to exit" << endl;        // DONE
+        cout << "> Enter 1 to Add Book" << endl;    // DONE
         cout << "> Enter 2 to Remove Book" << endl; // DONE
         cout << "> Enter 3 to Add User" << endl;    // DONE
         cout << "> Enter 4 to Remove User" << endl; // DONE
