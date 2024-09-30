@@ -29,10 +29,10 @@ public:
         cout << "this->email = " << this->email << endl;
     }
 };
-
+vector<Users> users;
 int main()
 {
-    vector<Users> users;
+
     Users s;
     s.add_users("Dhruv", "bt23cse135", "8459187658", "Dhruv@123");
     users.push_back(s);

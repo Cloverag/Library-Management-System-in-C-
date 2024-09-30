@@ -147,6 +147,121 @@ public:
     }
 };
 
+class Horror_book : public Books
+{
+    string horror_book_name;
+
+public:
+    static int no_of_horror_books;
+    Horror_book(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users) : Books(name, author, genre, subject, overall_allocate_users, ongoing_allocate_users)
+    {
+        this->horror_book_name = name;
+        if (Horror_book ::no_of_horror_books == 0 || Horror_book ::no_of_horror_books == NULL)
+        {
+            Horror_book ::no_of_horror_books == 1;
+        }
+        else
+        {
+            Horror_book ::no_of_horror_books++;
+        }
+    }
+};
+class Mystery_book : public Books
+{
+    string mystery_book_name;
+    static int no_of_mystery_books;
+
+public:
+    Mystery_book(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users) : Books(name, author, genre, subject, overall_allocate_users, ongoing_allocate_users)
+    {
+        this->mystery_book_name = name;
+        if (Mystery_book ::no_of_mystery_books == 0 || Mystery_book ::no_of_mystery_books == NULL)
+        {
+            Mystery_book ::no_of_mystery_books == 1;
+        }
+        else
+        {
+            Mystery_book ::no_of_mystery_books++;
+        }
+    }
+};
+class Science_Fiction_book : public Books
+{
+    string science_book_name;
+    static int no_of_science_books;
+
+public:
+    Science_Fiction_book(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users) : Books(name, author, genre, subject, overall_allocate_users, ongoing_allocate_users)
+    {
+        this->science_book_name = name;
+        if (Science_Fiction_book ::no_of_science_books == 0 || Science_Fiction_book ::no_of_science_books == NULL)
+        {
+            Science_Fiction_book ::no_of_science_books == 1;
+        }
+        else
+        {
+            Science_Fiction_book ::no_of_science_books++;
+        }
+    }
+};
+class Romance_book : public Books
+{
+    string romance_book_name;
+    static int no_of_romance_books;
+
+public:
+    Romance_book(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users) : Books(name, author, genre, subject, overall_allocate_users, ongoing_allocate_users)
+    {
+        this->romance_book_name = name;
+        if (Romance_book ::no_of_romance_books == 0 || Romance_book ::no_of_romance_books == NULL)
+        {
+            Romance_book ::no_of_romance_books == 1;
+        }
+        else
+        {
+            Romance_book ::no_of_romance_books++;
+        }
+    }
+};
+class Adventure_book : public Books
+{
+    string adventure_book_name;
+    static int no_of_adventure_books;
+
+public:
+    Adventure_book(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users) : Books(name, author, genre, subject, overall_allocate_users, ongoing_allocate_users)
+    {
+        this->adventure_book_name = name;
+        if (Adventure_book ::no_of_adventure_books == 0 || Adventure_book ::no_of_adventure_books == NULL)
+        {
+            Adventure_book ::no_of_adventure_books == 1;
+        }
+        else
+        {
+            Adventure_book ::no_of_adventure_books++;
+        }
+    }
+};
+class Historic_book : public Books
+{
+    string historic_book_name;
+    static int no_of_historic_books;
+
+public:
+    Historic_book(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users) : Books(name, author, genre, subject, overall_allocate_users, ongoing_allocate_users)
+    {
+        this->historic_book_name = name;
+        if (Historic_book ::no_of_historic_books == 0 || Historic_book ::no_of_historic_books == NULL)
+        {
+            Historic_book ::no_of_historic_books == 1;
+        }
+        else
+        {
+            Historic_book ::no_of_historic_books++;
+        }
+    }
+};
+
 void Add_Book(vector<Books> books);
 vector<Books> Remove_Book(vector<Books> books);
 void Add_User(vector<Users> users);
@@ -594,12 +709,19 @@ void Update_csv_from_books(vector<Books> books)
     }
     Book_data_edit.close();
 }
-
+vector<Users> users;
+vector<Books> books;
+vector<Horror_book> horror_book;
+vector<Mystery_book> mystery_book;
+vector<Science_Fiction_book> science_fiction_book;
+vector<Romance_book> romance_book;
+vector<Adventure_book> adventure_book;
+vector<Historic_book> historic_book;
 int main()
 {
-    vector<Users> users;
-    vector<Books> books;
+
     string id, name;
+    // cout << "Horror_book::no_of_horror_books: " << Horror_book::no_of_horror_books << endl;
     Update_users(users);
     Update_Books(books);
     int n;
