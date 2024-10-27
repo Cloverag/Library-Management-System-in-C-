@@ -77,9 +77,16 @@ public:
     }
     void display_user_data()
     {
-        cout << endl
-             << "display_user_data called" << endl;
-        cout << "name = " << this->name << ", id = " << this->id << ", phone = " << this->phone << ", email = " << this->email << ", current_books_no = " << this->current_books_no << ", all_books_no = " << this->all_books_no << ", current_books_names = " << this->current_books_names << ", all_books_names = " << this->all_books_names << endl
+        cout << endl;
+        //  << "display_user_data called" << endl;
+        cout << "Name = " << this->name << endl
+             << "Id = " << this->id << endl
+             << "Phone = " << this->phone << endl
+             << "Email = " << this->email << endl
+             << "Current_books_no = " << this->current_books_no << endl
+             << "All_books_no = " << this->all_books_no << endl
+             << "Current_books_names = " << this->current_books_names << endl
+             << "All_books_names = " << this->all_books_names << endl
              << endl;
     }
     string get_data_in_string()
@@ -134,9 +141,14 @@ public:
     }
     void display_book_data()
     {
-        cout << endl
-             << "display_user_data called" << endl;
-        cout << "name = " << this->name << ", author = " << this->author << ", genre = " << this->genre << ", subject = " << this->subject << ", overall_allocate_users = " << this->overall_allocate_users << ", ongoing_allocate_users = " << this->ongoing_allocate_users << endl;
+        cout << endl;
+        //  << "display_user_data called" << endl;
+        cout << "Name = " << this->name << endl
+             << "Author = " << this->author << endl
+             << "Genre = " << this->genre << endl
+             << "Subject = " << this->subject << endl
+             << "Overall_allocate_users = " << this->overall_allocate_users << endl
+             << "Ongoing_allocate_users = " << this->ongoing_allocate_users << endl;
         cout << endl;
     }
     string get_data_in_string()
@@ -388,7 +400,10 @@ vector<Books> Remove_Book(vector<Books> books)
     cout << "Remove_Book called" << endl;
     string name;
     cout << "Name: ";
-    cin >> name;
+    cin.ignore();
+    getline(cin, name);
+    cout << "Entered name = " << name;
+
     int i = 0;
     while (i < books.size())
     {
@@ -421,6 +436,7 @@ void Add_User(vector<Users> users)
     getline(cin, name);
     cout << "ID : ";
     getline(cin, id);
+    transform(id.begin(), id.end(), id.begin(), ::tolower);
     cout << "Phone : ";
     getline(cin, phone);
     cout << "Email : ";
@@ -448,6 +464,8 @@ vector<Users> Remove_User(vector<Users> users)
     string Id;
     cout << "Id: ";
     cin >> Id;
+    transform(Id.begin(), Id.end(), Id.begin(), ::tolower);
+
     int i = 0;
     while (i < users.size())
     {
