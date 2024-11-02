@@ -91,8 +91,9 @@ public:
     }
     string get_data_in_string()
     {
+        // cout << "get_data_in_string called" << endl;
         string s = "";
-        s = name + "," + id + "," + phone + "," + email + "," + to_string(current_books_no) + "," + to_string(all_books_no) + "," + to_string(current_books_names) + "," + to_string(all_books_names);
+        s = this->name + "," + this->id + "," + this->phone + "," + this->email + "," + to_string(this->current_books_no) + "," + to_string(this->all_books_no) + "," + to_string(this->current_books_names) + "," + to_string(this->all_books_names);
         return s;
     }
 };
@@ -274,6 +275,15 @@ public:
     }
 };
 
+vector<Users> users;
+vector<Books> books;
+vector<Horror_book> horror_book;
+vector<Mystery_book> mystery_book;
+vector<Science_Fiction_book> science_fiction_book;
+vector<Romance_book> romance_book;
+vector<Adventure_book> adventure_book;
+vector<Historic_book> historic_book;
+
 void Add_Book(vector<Books> books);
 vector<Books> Remove_Book(vector<Books> books);
 void Add_User(vector<Users> users);
@@ -284,8 +294,8 @@ void History_of_User(vector<Users> users, string id);
 int get_no_of_lines(ifstream &User_data);
 void Update_users(vector<Users> &users);
 void Update_Books(vector<Books> &books);
-int does_the_user_exists(vector<Users> &users, string id);
-int does_the_book_exists(vector<Books> &books, string name);
+int does_the_user_exists(string id);
+int does_the_book_exists(string name);
 void show_all_users(vector<Users> users);
 void show_all_books(vector<Books> books);
 void Remove_user_from_csv(vector<Users> users, string id);
@@ -441,7 +451,7 @@ void Add_User(vector<Users> users)
     getline(cin, phone);
     cout << "Email : ";
     getline(cin, email);
-    int index = does_the_user_exists(users, id);
+    int index = does_the_user_exists(id);
     if (index != -1)
     {
         cout << "A user with same id already exits" << endl;
@@ -490,7 +500,31 @@ vector<Users> Remove_User(vector<Users> users)
 }
 void Allocate_Book_to_User()
 {
+    string user_id, book_name;
     cout << "Allocate_Book_to_User called" << endl;
+    cout << "Enter user id: ";
+    cin.ignore();
+    getline(cin, user_id);
+    cout << "Enter book name: ";
+    getline(cin, book_name);
+    int user_index = does_the_user_exists(user_id);
+    if (user_index == -1)
+    {
+        cout << "User doesn't exists" << endl;
+        return;
+    }
+    int book_index = does_the_book_exists(book_name);
+    if (book_index == -1)
+    {
+        cout << "Book doesn't exists" << endl;
+        return;
+    }
+    cout << "USER DATA = " << users[user_index].get_data_in_string()<<endl;
+    cout << "BOOK DATA = " << books[book_index].get_data_in_string()<<endl;
+
+
+
+
 }
 void Deallocate_Book_to_User()
 {
@@ -498,7 +532,7 @@ void Deallocate_Book_to_User()
 }
 void History_of_User(vector<Users> users, string id)
 {
-    int index = does_the_user_exists(users, id);
+    int index = does_the_user_exists(id);
     if (index != -1)
     {
         users[index].display_user_data();
@@ -510,7 +544,7 @@ void History_of_User(vector<Users> users, string id)
 }
 void History_of_Book(vector<Books> books, string name)
 {
-    int index = does_the_book_exists(books, name);
+    int index = does_the_book_exists(name);
     if (index != -1)
     {
         books[index].display_book_data();
@@ -521,7 +555,7 @@ void History_of_Book(vector<Books> books, string name)
     }
 }
 
-int does_the_user_exists(vector<Users> &users, string id)
+int does_the_user_exists(string id)
 {
     cout << "does_the_user_exists called" << endl;
     int i = 0;
@@ -529,18 +563,22 @@ int does_the_user_exists(vector<Users> &users, string id)
     transform(upper_id.begin(), upper_id.end(), upper_id.begin(), ::toupper);
     transform(lower_id.begin(), lower_id.end(), lower_id.begin(), ::tolower);
     cout << "upper_id = " << upper_id << endl;
-    cout << "upper_id = " << upper_id << endl;
+    cout << "lower_id = " << lower_id << endl;
+    cout << "current_no_users= " << current_no_users << endl;
     while (i <= current_no_users)
     {
+
+        cout << "users[i].id = " << users[i].id << endl;
         if (users[i].id == upper_id || users[i].id == lower_id)
         {
+            cout << "If statement called with i = " << i << endl;
             return i;
         }
         i++;
     }
     return -1;
 }
-int does_the_book_exists(vector<Books> &books, string name)
+int does_the_book_exists(string name)
 {
     cout << "does_the_book_exists called name = " << name << endl;
     cout << "current_no_books = " << current_no_books << endl;
@@ -727,14 +765,7 @@ void Update_csv_from_books(vector<Books> books)
     }
     Book_data_edit.close();
 }
-vector<Users> users;
-vector<Books> books;
-vector<Horror_book> horror_book;
-vector<Mystery_book> mystery_book;
-vector<Science_Fiction_book> science_fiction_book;
-vector<Romance_book> romance_book;
-vector<Adventure_book> adventure_book;
-vector<Historic_book> historic_book;
+
 int main()
 {
 
