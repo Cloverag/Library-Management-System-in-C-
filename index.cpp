@@ -19,8 +19,8 @@ private:
     string email;
     int current_books_no;
     int all_books_no;
-    int current_books_names;
-    int all_books_names;
+    vector<string> current_books_issue_id;
+    vector<string> all_books_issue_id;
 
 public:
     string id;
@@ -36,10 +36,8 @@ public:
         this->email = email;
         this->current_books_no = 0;
         this->all_books_no = 0;
-        this->current_books_names = 0;
-        this->all_books_names = 0;
     }
-    Users(string name, string id, string email, string phone, int current_books_no, int all_books_no, int current_books_names, int all_books_names)
+    Users(string name, string id, string email, string phone, int current_books_no, int all_books_no, int current_books_issue_id, int all_books_issue_id)
     {
         this->name = name;
         this->phone = phone;
@@ -47,8 +45,8 @@ public:
         this->email = email;
         this->current_books_no = current_books_no;
         this->all_books_no = all_books_no;
-        this->current_books_names = current_books_names;
-        this->all_books_names = all_books_names;
+        // this->current_books_names = current_books_names;
+        // this->all_books_names = all_books_names;
     }
     Users(string arr[])
     {
@@ -59,8 +57,8 @@ public:
         this->email = arr[3];
         this->current_books_no = stoi(arr[4]);
         this->all_books_no = stoi(arr[5]);
-        this->current_books_names = stoi(arr[6]);
-        this->all_books_names = stoi(arr[7]);
+        this->add_current_issued_books(arr[6]);
+        this->add_all_issued_books(arr[7]);
     }
     void add_new_users(string name, string id, string phone, string email)
     {
@@ -72,8 +70,54 @@ public:
         this->email = email;
         this->current_books_no = 0;
         this->all_books_no = 0;
-        this->current_books_names = 0;
-        this->all_books_names = 0;
+        // this->current_books_issue_id = 0;
+        // this->all_books_issue_id = 0;
+    }
+
+    void add_current_issued_books(string arr){
+        stringstream s(arr);
+        char del = '|';
+        string word;
+        while(!s.eof()){
+            getline(s, word, del);
+            current_books_issue_id.push_back(word);
+        }
+    }
+    void add_all_issued_books(string arr)
+    {
+
+        stringstream s(arr);
+        char del = '|';
+        string word;
+        while (!s.eof())
+        {
+            getline(s, word, del);
+            all_books_issue_id.push_back(word);
+        }
+    }
+    string get_current_issued_book_ids_in_string(){
+        string s = "";
+        int j = current_books_issue_id.size(), i = 0;
+        while(i<j){
+            s = s + current_books_issue_id[i];
+            i++;
+            if(i<j){
+                s = s + "|";
+            }
+        }
+        return s;
+    }
+    string get_all_issued_book_ids_in_string(){
+        string s = "";
+        int j = all_books_issue_id.size(), i = 0;
+        while(i<j){
+            s = s + all_books_issue_id[i];
+            i++;
+            if(i<j){
+                s = s + "|";
+            }
+        }
+        return s;
     }
     void display_user_data()
     {
@@ -85,15 +129,15 @@ public:
              << "Email = " << this->email << endl
              << "Current_books_no = " << this->current_books_no << endl
              << "All_books_no = " << this->all_books_no << endl
-             << "Current_books_names = " << this->current_books_names << endl
-             << "All_books_names = " << this->all_books_names << endl
+             << "Current_books_issue_id = " << this->get_current_issued_book_ids_in_string() << endl
+             << "All_books_issue_id = " << this->get_all_issued_book_ids_in_string() << endl
              << endl;
     }
     string get_data_in_string()
     {
         // cout << "get_data_in_string called" << endl;
         string s = "";
-        s = this->name + "," + this->id + "," + this->phone + "," + this->email + "," + to_string(this->current_books_no) + "," + to_string(this->all_books_no) + "," + to_string(this->current_books_names) + "," + to_string(this->all_books_names);
+        s = this->name + "," + this->id + "," + this->phone + "," + this->email + "," + to_string(this->current_books_no) + "," + to_string(this->all_books_no) + "," + this->get_current_issued_book_ids_in_string() + "," + this->get_all_issued_book_ids_in_string();
         return s;
     }
 };
@@ -286,7 +330,7 @@ vector<Historic_book> historic_book;
 
 void Add_Book(vector<Books> books);
 vector<Books> Remove_Book(vector<Books> books);
-void Add_User(vector<Users> users);
+vector<Users> Add_User(vector<Users> users);
 vector<Users> Remove_User(vector<Users> users);
 void Allocate_Book_to_User();
 void Deallocate_Book_to_User();
@@ -436,7 +480,7 @@ vector<Books> Remove_Book(vector<Books> books)
     }
     return books;
 }
-void Add_User(vector<Users> users)
+vector<Users> Add_User(vector<Users> users)
 {
     cout << "Add_User called" << endl;
     ofstream User_data_edit("User_data.csv", ios::app);
@@ -455,7 +499,7 @@ void Add_User(vector<Users> users)
     if (index != -1)
     {
         cout << "A user with same id already exits" << endl;
-        return;
+        return users;
     }
     else
     {
@@ -463,10 +507,11 @@ void Add_User(vector<Users> users)
         users.push_back(temp);
         users[current_no_users].display_user_data();
         current_no_users++;
-        s = name + "," + id + "," + phone + "," + email + ",0,0,0,0\n";
+        s = name + "," + id + "," + phone + "," + email + ",0,0,NULL,NULL\n";
         User_data_edit << s;
         User_data_edit.close();
     }
+    return users;
 }
 vector<Users> Remove_User(vector<Users> users)
 {
@@ -484,6 +529,7 @@ vector<Users> Remove_User(vector<Users> users)
         transform(lid.begin(), lid.end(), lid.begin(), ::tolower);
         if (users[i].id == Id)
         {
+            cout << "If statement called"<<endl;
             users.erase(users.begin() + i);
             current_no_users--;
             show_all_users(users);
@@ -565,7 +611,7 @@ int does_the_user_exists(string id)
     cout << "upper_id = " << upper_id << endl;
     cout << "lower_id = " << lower_id << endl;
     cout << "current_no_users= " << current_no_users << endl;
-    while (i <= current_no_users)
+    while (i < current_no_users)
     {
 
         cout << "users[i].id = " << users[i].id << endl;
@@ -743,6 +789,7 @@ void Update_csv_from_users(vector<Users> users)
     User_data_edit << "NAME,ID_NO,PHONE_NO,EMAIL_ID,CURRENT_BOOKS_NO,ALL_BOOKS_NO,CURRENT_BOOKS_NAMES,ALL_BOOKS_NAMES" << endl;
     string s = "";
     int i = 0;
+    cout<<"users.size() = "<<users.size()<<endl;
     while (i < users.size())
     {
         s = users[i].get_data_in_string();
@@ -807,7 +854,7 @@ int main()
             books = Remove_Book(books);
             break;
         case 3:
-            Add_User(users);
+            users = Add_User(users);
             break;
         case 4:
             users = Remove_User(users);
