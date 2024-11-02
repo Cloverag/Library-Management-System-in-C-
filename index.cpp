@@ -5,12 +5,62 @@
 #include <fstream>
 #include <algorithm>
 #include <typeinfo>
+#include <ctime>
 
 using namespace std;
 
 int current_no_users = 0;
 int current_no_books = 0;
+int current_no_issued_books = 0;
 
+class Issued_books
+{
+    string issue_id;
+    string book_name;
+    string id;
+    string issue_date;
+    string return_date;
+
+    string generate_issued_id(string name, string id)
+    {
+        time_t timestamp;
+        time(&timestamp);
+        char a = name[0];
+        char b = id[0];
+        string pass = a + to_string(b) + to_string(timestamp);
+        return pass;
+    }
+
+public:
+    Issued_books(string name, string id)
+    {
+        time_t timestamp;
+        time(&timestamp);
+        string temp = ctime(&timestamp);
+        if (temp[temp.length() - 1] == '\n')
+        {
+            cout << "If called" << endl;
+            temp[temp.length() - 1] = ' ';
+        }
+        this->issue_id = generate_issued_id(name, id);
+        this->book_name = name;
+        this->id = id;
+        this->issue_date = temp;
+        this->return_date = "-";
+        cout << "this->issue_date + this->return_date = " << this->issue_date + this->return_date << endl;
+    }
+    string get_issued_book_data()
+    {
+        string s = "";
+        s = this->issue_id + "," + this->book_name + "," + this->id + "," + this->issue_date + "," + this->return_date;
+        return s;
+    }
+    string
+    get_issued_id()
+    {
+        return this->issue_id;
+    }
+};
 class Users
 {
 private:
@@ -74,11 +124,13 @@ public:
         // this->all_books_issue_id = 0;
     }
 
-    void add_current_issued_books(string arr){
+    void add_current_issued_books(string arr)
+    {
         stringstream s(arr);
         char del = '|';
         string word;
-        while(!s.eof()){
+        while (!s.eof())
+        {
             getline(s, word, del);
             current_books_issue_id.push_back(word);
         }
@@ -95,25 +147,31 @@ public:
             all_books_issue_id.push_back(word);
         }
     }
-    string get_current_issued_book_ids_in_string(){
+    string get_current_issued_book_ids_in_string()
+    {
         string s = "";
         int j = current_books_issue_id.size(), i = 0;
-        while(i<j){
+        while (i < j)
+        {
             s = s + current_books_issue_id[i];
             i++;
-            if(i<j){
+            if (i < j)
+            {
                 s = s + "|";
             }
         }
         return s;
     }
-    string get_all_issued_book_ids_in_string(){
+    string get_all_issued_book_ids_in_string()
+    {
         string s = "";
         int j = all_books_issue_id.size(), i = 0;
-        while(i<j){
+        while (i < j)
+        {
             s = s + all_books_issue_id[i];
             i++;
-            if(i<j){
+            if (i < j)
+            {
                 s = s + "|";
             }
         }
@@ -327,6 +385,7 @@ vector<Science_Fiction_book> science_fiction_book;
 vector<Romance_book> romance_book;
 vector<Adventure_book> adventure_book;
 vector<Historic_book> historic_book;
+vector<Issued_books> issued_books;
 
 void Add_Book(vector<Books> books);
 vector<Books> Remove_Book(vector<Books> books);
@@ -346,7 +405,7 @@ void Remove_user_from_csv(vector<Users> users, string id);
 void Remove_book_from_csv(vector<Books> books, string name);
 void Update_csv_from_users(vector<Users> users);
 void Update_csv_from_books(vector<Books> books);
-
+void add_issued_book_data(string data);
 int current_no = 0;
 
 void Update_Books(vector<Books> &books)
@@ -529,7 +588,7 @@ vector<Users> Remove_User(vector<Users> users)
         transform(lid.begin(), lid.end(), lid.begin(), ::tolower);
         if (users[i].id == Id)
         {
-            cout << "If statement called"<<endl;
+            cout << "If statement called" << endl;
             users.erase(users.begin() + i);
             current_no_users--;
             show_all_users(users);
@@ -565,12 +624,14 @@ void Allocate_Book_to_User()
         cout << "Book doesn't exists" << endl;
         return;
     }
-    cout << "USER DATA = " << users[user_index].get_data_in_string()<<endl;
-    cout << "BOOK DATA = " << books[book_index].get_data_in_string()<<endl;
+    cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
+    cout << "BOOK DATA = " << books[book_index].get_data_in_string() << endl;
 
-
-
-
+    Issued_books temp(book_name, user_id);
+    issued_books.push_back(temp);
+    cout << "Issued book data = " << issued_books[current_no_issued_books].get_issued_book_data();
+    add_issued_book_data(issued_books[current_no_issued_books].get_issued_book_data());
+    current_no_issued_books++;
 }
 void Deallocate_Book_to_User()
 {
@@ -789,7 +850,7 @@ void Update_csv_from_users(vector<Users> users)
     User_data_edit << "NAME,ID_NO,PHONE_NO,EMAIL_ID,CURRENT_BOOKS_NO,ALL_BOOKS_NO,CURRENT_BOOKS_NAMES,ALL_BOOKS_NAMES" << endl;
     string s = "";
     int i = 0;
-    cout<<"users.size() = "<<users.size()<<endl;
+    cout << "users.size() = " << users.size() << endl;
     while (i < users.size())
     {
         s = users[i].get_data_in_string();
@@ -811,6 +872,14 @@ void Update_csv_from_books(vector<Books> books)
         i++;
     }
     Book_data_edit.close();
+}
+
+void add_issued_book_data(string data)
+{
+    cout << "add_issued_book_data called" << endl;
+    ofstream Issue_book("Issued_books.csv", ios::app);
+    Issue_book << data << endl;
+    Issue_book.close();
 }
 
 int main()
