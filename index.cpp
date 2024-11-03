@@ -126,25 +126,37 @@ public:
 
     void add_current_issued_books(string arr)
     {
+        if(arr == "NULL"){
+            return;
+        }
+        cout << "add_current_issued_books called" << endl;
+        cout << "arr = " << arr << endl;
         stringstream s(arr);
         char del = '|';
         string word;
         while (!s.eof())
         {
             getline(s, word, del);
-            current_books_issue_id.push_back(word);
+            cout << "word = " << word << endl;
+            this->current_books_issue_id.push_back(word);
         }
     }
     void add_all_issued_books(string arr)
     {
-
+        if (arr == "NULL")
+        {
+            return;
+        }
+        cout << "add_all_issued_books called" << endl;
+        cout << "arr = " << arr << endl;
         stringstream s(arr);
         char del = '|';
         string word;
         while (!s.eof())
         {
             getline(s, word, del);
-            all_books_issue_id.push_back(word);
+            cout << "word = " << word << endl;
+            this->all_books_issue_id.push_back(word);
         }
     }
     string get_current_issued_book_ids_in_string()
@@ -197,6 +209,34 @@ public:
         string s = "";
         s = this->name + "," + this->id + "," + this->phone + "," + this->email + "," + to_string(this->current_books_no) + "," + to_string(this->all_books_no) + "," + this->get_current_issued_book_ids_in_string() + "," + this->get_all_issued_book_ids_in_string();
         return s;
+    }
+    void add_new_issued_books(string book_name)
+    {
+        add_current_issued_books(book_name);
+        add_all_issued_books(book_name);
+    }
+    void show_all_issued_books_id()
+    {
+        cout << endl<<"show_all_issued_books_id called" << endl<<endl;
+        int i = 0;
+        while (i < this->all_books_issue_id.size())
+        {
+            cout << "->  " << this->all_books_issue_id[i] << endl;
+            i++;
+        }
+        cout << endl<<endl;
+    }
+    void show_current_issued_books_id()
+    {
+        cout <<endl<< "show_current_issued_books_id called" << endl<<endl;
+        int i = 0;
+        while (i < this->current_books_issue_id.size())
+        {
+
+            cout << i << " ->  " << this->current_books_issue_id[i] << endl;
+            i++;
+        }
+        cout << endl<<endl;
     }
 };
 class Books
@@ -632,6 +672,10 @@ void Allocate_Book_to_User()
     cout << "Issued book data = " << issued_books[current_no_issued_books].get_issued_book_data();
     add_issued_book_data(issued_books[current_no_issued_books].get_issued_book_data());
     current_no_issued_books++;
+    users[user_index].add_current_issued_books(books[book_index].name);
+    users[user_index].add_all_issued_books(books[book_index].name);
+    users[user_index].show_current_issued_books_id();
+    users[user_index].show_all_issued_books_id();
 }
 void Deallocate_Book_to_User()
 {
