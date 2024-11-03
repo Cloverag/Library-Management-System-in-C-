@@ -55,8 +55,7 @@ public:
         s = this->issue_id + "," + this->book_name + "," + this->id + "," + this->issue_date + "," + this->return_date;
         return s;
     }
-    string
-    get_issued_id()
+    string get_issued_id()
     {
         return this->issue_id;
     }
@@ -126,7 +125,8 @@ public:
 
     void add_current_issued_books(string arr)
     {
-        if(arr == "NULL"){
+        if (arr == "NULL")
+        {
             return;
         }
         cout << "add_current_issued_books called" << endl;
@@ -217,18 +217,23 @@ public:
     }
     void show_all_issued_books_id()
     {
-        cout << endl<<"show_all_issued_books_id called" << endl<<endl;
+        cout << endl
+             << "show_all_issued_books_id called" << endl
+             << endl;
         int i = 0;
         while (i < this->all_books_issue_id.size())
         {
             cout << "->  " << this->all_books_issue_id[i] << endl;
             i++;
         }
-        cout << endl<<endl;
+        cout << endl
+             << endl;
     }
     void show_current_issued_books_id()
     {
-        cout <<endl<< "show_current_issued_books_id called" << endl<<endl;
+        cout << endl
+             << "show_current_issued_books_id called" << endl
+             << endl;
         int i = 0;
         while (i < this->current_books_issue_id.size())
         {
@@ -236,7 +241,8 @@ public:
             cout << i << " ->  " << this->current_books_issue_id[i] << endl;
             i++;
         }
-        cout << endl<<endl;
+        cout << endl
+             << endl;
     }
 };
 class Books
@@ -431,7 +437,7 @@ void Add_Book(vector<Books> books);
 vector<Books> Remove_Book(vector<Books> books);
 vector<Users> Add_User(vector<Users> users);
 vector<Users> Remove_User(vector<Users> users);
-void Allocate_Book_to_User();
+vector<Users> Allocate_Book_to_User();
 void Deallocate_Book_to_User();
 void History_of_User(vector<Users> users, string id);
 int get_no_of_lines(ifstream &User_data);
@@ -443,7 +449,7 @@ void show_all_users(vector<Users> users);
 void show_all_books(vector<Books> books);
 void Remove_user_from_csv(vector<Users> users, string id);
 void Remove_book_from_csv(vector<Books> books, string name);
-void Update_csv_from_users(vector<Users> users);
+vector<Users> Update_csv_from_users(vector<Users> users);
 void Update_csv_from_books(vector<Books> books);
 void add_issued_book_data(string data);
 int current_no = 0;
@@ -643,7 +649,7 @@ vector<Users> Remove_User(vector<Users> users)
     }
     return users;
 }
-void Allocate_Book_to_User()
+vector<Users> Allocate_Book_to_User()
 {
     string user_id, book_name;
     cout << "Allocate_Book_to_User called" << endl;
@@ -672,10 +678,11 @@ void Allocate_Book_to_User()
     cout << "Issued book data = " << issued_books[current_no_issued_books].get_issued_book_data();
     add_issued_book_data(issued_books[current_no_issued_books].get_issued_book_data());
     current_no_issued_books++;
-    users[user_index].add_current_issued_books(books[book_index].name);
-    users[user_index].add_all_issued_books(books[book_index].name);
+    users[user_index].add_new_issued_books(temp.get_issued_id());
     users[user_index].show_current_issued_books_id();
     users[user_index].show_all_issued_books_id();
+    users = Update_csv_from_users(users);
+    return users;
 }
 void Deallocate_Book_to_User()
 {
@@ -888,7 +895,7 @@ void Remove_book_from_csv(vector<Books> books, string name)
     Book_data_edit.close();
 }
 
-void Update_csv_from_users(vector<Users> users)
+vector<Users> Update_csv_from_users(vector<Users> users)
 {
     ofstream User_data_edit("User_data.csv");
     User_data_edit << "NAME,ID_NO,PHONE_NO,EMAIL_ID,CURRENT_BOOKS_NO,ALL_BOOKS_NO,CURRENT_BOOKS_NAMES,ALL_BOOKS_NAMES" << endl;
@@ -973,7 +980,7 @@ int main()
             users = Remove_User(users);
             break;
         case 5:
-            Allocate_Book_to_User();
+            users = Allocate_Book_to_User();
             break;
         case 6:
             Deallocate_Book_to_User();
@@ -997,7 +1004,7 @@ int main()
             show_all_books(books);
             break;
         case 11:
-            Update_csv_from_users(users);
+            users =Update_csv_from_users(users);
             break;
         case 12:
             Update_csv_from_books(books);
