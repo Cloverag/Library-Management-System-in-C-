@@ -49,6 +49,14 @@ public:
         this->return_date = "-";
         cout << "this->issue_date + this->return_date = " << this->issue_date + this->return_date << endl;
     }
+    Issued_books(string arr[])
+    {
+        this->issue_id = arr[0];
+        this->book_name = arr[1];
+        this->id = arr[2];
+        this->issue_date = arr[3];
+        this->return_date = arr[4];
+    }
     string get_issued_book_data()
     {
         string s = "";
@@ -437,21 +445,25 @@ void Add_Book(vector<Books> books);
 vector<Books> Remove_Book(vector<Books> books);
 vector<Users> Add_User(vector<Users> users);
 vector<Users> Remove_User(vector<Users> users);
-vector<Users> Allocate_Book_to_User();
+vector<Issued_books> Allocate_Book_to_User();
 void Deallocate_Book_to_User();
 void History_of_User(vector<Users> users, string id);
 int get_no_of_lines(ifstream &User_data);
 void Update_users(vector<Users> &users);
 void Update_Books(vector<Books> &books);
+void Update_Issued_Books(vector<Issued_books> &issued_books);
 int does_the_user_exists(string id);
 int does_the_book_exists(string name);
 void show_all_users(vector<Users> users);
 void show_all_books(vector<Books> books);
+void show_all_issued_books(vector<Issued_books> issued_books);
 void Remove_user_from_csv(vector<Users> users, string id);
 void Remove_book_from_csv(vector<Books> books, string name);
 vector<Users> Update_csv_from_users(vector<Users> users);
 void Update_csv_from_books(vector<Books> books);
 void add_issued_book_data(string data);
+int get_index_of_issued_book(string id);
+void find_issued_book_by_id_function(string id);
 int current_no = 0;
 
 void Update_Books(vector<Books> &books)
@@ -518,6 +530,39 @@ void Update_users(vector<Users> &users)
     }
     User_data.close();
 }
+
+void Update_Issued_Books(vector<Issued_books> &issued_books)
+{
+    cout << "Update_Books called" << endl;
+    ifstream Issued_book("Issued_books.csv");
+    string s = "";
+    char del = ',';
+    int i = 0;
+    getline(Issued_book, s);
+    s = "";
+    string arr[5];
+    while (!Issued_book.eof())
+    {
+        getline(Issued_book, s);
+        cout << "s = " << s << endl;
+        if (s == "")
+        {
+            cout << "if statemenet s == called" << endl;
+            return;
+        }
+        stringstream ss(s);
+        int j = 0;
+        while (!ss.eof())
+        {
+            getline(ss, arr[j], del);
+            j++;
+        }
+        Issued_books temp(arr);
+        issued_books.push_back(temp);
+        i++;
+    }
+}
+
 int get_no_of_lines(ifstream &file_name)
 {
     cout << "get_no_of_lines called" << endl;
@@ -649,7 +694,7 @@ vector<Users> Remove_User(vector<Users> users)
     }
     return users;
 }
-vector<Users> Allocate_Book_to_User()
+vector<Issued_books> Allocate_Book_to_User()
 {
     string user_id, book_name;
     cout << "Allocate_Book_to_User called" << endl;
@@ -662,13 +707,13 @@ vector<Users> Allocate_Book_to_User()
     if (user_index == -1)
     {
         cout << "User doesn't exists" << endl;
-        return;
+        return issued_books;
     }
     int book_index = does_the_book_exists(book_name);
     if (book_index == -1)
     {
         cout << "Book doesn't exists" << endl;
-        return;
+        return issued_books;
     }
     cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
     cout << "BOOK DATA = " << books[book_index].get_data_in_string() << endl;
@@ -682,7 +727,7 @@ vector<Users> Allocate_Book_to_User()
     users[user_index].show_current_issued_books_id();
     users[user_index].show_all_issued_books_id();
     users = Update_csv_from_users(users);
-    return users;
+    return issued_books;
 }
 void Deallocate_Book_to_User()
 {
@@ -783,6 +828,18 @@ void show_all_books(vector<Books> books)
     {
         cout << "i = " << i << " - ";
         books[i].display_book_data();
+        i++;
+    }
+}
+
+void show_all_issued_books(vector<Issued_books> issued_books)
+{
+    cout << "show_all_issued_books called" << endl;
+    int i = 0;
+    while (i <= issued_books.size())
+    {
+        cout << "i = " << i << endl;
+        cout << "Data = " << issued_books[i].get_issued_book_data() << endl;
         i++;
     }
 }
@@ -933,6 +990,45 @@ void add_issued_book_data(string data)
     Issue_book.close();
 }
 
+int get_index_of_issued_book(string id)
+{
+    cout << "get_index_of_issued_book called" << endl;
+    int i = 0;
+    cout << "issued_books.size() = " << issued_books.size() << endl;
+    while (i <= issued_books.size())
+    {
+        if (issued_books[i].get_issued_id() == id)
+        {
+            return i;
+        }
+        else
+        {
+            i++;
+        }
+    }
+    return -1;
+}
+void find_issued_book_by_id_function(string id)
+{
+    cout << "find_issued_book_by_id_function called" << endl;
+    string lower_id = id, higher_id = id;
+    transform(lower_id.begin(), lower_id.end(), lower_id.begin(), ::tolower);
+    transform(higher_id.begin(), higher_id.end(), higher_id.begin(), ::toupper);
+    cout << "lower_id = " << lower_id << endl;
+    cout << "higher_id = " << higher_id << endl;
+    int index = get_index_of_issued_book(id);
+    if (index == -1)
+    {
+        cout << "Issued_Book not found" << endl;
+    }
+    else
+    {
+        cout << "Book found" << endl;
+        cout << "i = " << index << endl;
+        cout << "issued_books[index].get_issued_book_data() = " << issued_books[index].get_issued_book_data() << endl;
+    }
+}
+
 int main()
 {
 
@@ -940,6 +1036,7 @@ int main()
     // cout << "Horror_book::no_of_horror_books: " << Horror_book::no_of_horror_books << endl;
     Update_users(users);
     Update_Books(books);
+    Update_Issued_Books(issued_books);
     int n;
     while (n != 0)
     {
@@ -950,14 +1047,16 @@ int main()
         cout << "> Enter 2 to Remove Book" << endl;             // DONE
         cout << "> Enter 3 to Add User" << endl;                // DONE
         cout << "> Enter 4 to Remove User" << endl;             // DONE
-        cout << "> Enter 5 to Allocate Book to User" << endl;   // WORKING
+        cout << "> Enter 5 to Allocate Book to User" << endl;   // DONE
         cout << "> Enter 6 to Deallocate Book to User" << endl; // WORKING
         cout << "> Enter 7 to History of User" << endl;         // DONE
         cout << "> Enter 8 to History of Book" << endl;         // DONE
         cout << "> Enter 9 to Show all Users" << endl;          // DONE
         cout << "> Enter 10 to Show all Books" << endl;         // DONE
-        cout << "> Enter 11 to Update csv from users" << endl;  // DONE
-        cout << "> Enter 12 to Update csv from books" << endl   // DONE
+        cout << "> Enter 11 to Show all Issued Books" << endl;  // DONE
+        cout << "> Enter 12 to Update csv from users" << endl;  // DONE
+        cout << "> Enter 13 to Update csv from books" << endl;  // DONE
+        cout << "> Enter 14 to Update csv from books" << endl   // DONE
              << endl;
         cout << " *************************************************** " << endl;
         cout << " Enter your choice :: ";
@@ -980,7 +1079,7 @@ int main()
             users = Remove_User(users);
             break;
         case 5:
-            users = Allocate_Book_to_User();
+            issued_books = Allocate_Book_to_User();
             break;
         case 6:
             Deallocate_Book_to_User();
@@ -1004,10 +1103,20 @@ int main()
             show_all_books(books);
             break;
         case 11:
-            users =Update_csv_from_users(users);
+            show_all_issued_books(issued_books);
             break;
         case 12:
+            users = Update_csv_from_users(users);
+            break;
+        case 13:
             Update_csv_from_books(books);
+            break;
+        case 14:
+            // string temp = "";
+            cout << "Issued_Bookk ID = ";
+            cin.ignore();
+            getline(cin, id);
+            find_issued_book_by_id_function(id);
             break;
         default:
             cout << "Invalid Input" << endl;
