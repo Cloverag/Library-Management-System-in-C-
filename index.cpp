@@ -316,6 +316,15 @@ public:
         s = name + "," + author + "," + genre + "," + subject + "," + to_string(overall_allocate_users) + "," + to_string(ongoing_allocate_users);
         return s;
     }
+    void add_ongoing_allocate_users()
+    {
+        this->ongoing_allocate_users++;
+        this->overall_allocate_users++;
+    }
+    void remove_ongoing_allocate_users()
+    {
+        this->ongoing_allocate_users++;
+    }
 };
 
 class Horror_book : public Books
@@ -706,7 +715,7 @@ vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &
     cout << "Enter book name: ";
     getline(cin, book_name);
     int user_index = does_the_user_exists(user_id);
-    cout<<"1. Users.size = "<<users.size()<<endl;
+    // cout<<"1. Users.size = "<<users.size()<<endl;
     if (user_index == -1)
     {
         cout << "User doesn't exists" << endl;
@@ -718,7 +727,7 @@ vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &
         cout << "Book doesn't exists" << endl;
         return issued_books;
     }
-    cout<<"2. Users.size = "<<users.size()<<endl;
+    // cout<<"2. Users.size = "<<users.size()<<endl;
     cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
     cout << "BOOK DATA = " << books[book_index].get_data_in_string() << endl;
 
@@ -727,15 +736,18 @@ vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &
     cout << "Issued book data = " << temp.get_issued_book_data();
     add_issued_book_data(temp.get_issued_book_data());
     current_no_issued_books++;
-    cout << "3. Users.size = " << users.size() << endl;
+    // cout << "3. Users.size = " << users.size() << endl;
     users[user_index].add_new_issued_books(temp.get_issued_id());
-    cout<<"4. Users.size = "<<users.size()<<endl;
+    // cout<<"4. Users.size = "<<users.size()<<endl;
     users[user_index].show_current_issued_books_id();
-    cout<<"5. Users.size = "<<users.size()<<endl;
+    // cout<<"5. Users.size = "<<users.size()<<endl;
     users[user_index].show_all_issued_books_id();
-    cout<<"6. Users.size = "<<users.size()<<endl;
+    // cout<<"6. Users.size = "<<users.size()<<endl;
     Update_csv_from_users(users);
-    cout<<"7. Users.size = "<<users.size()<<endl;
+    books[book_index].add_ongoing_allocate_users();
+    Update_csv_from_books(books);
+
+    // cout<<"7. Users.size = "<<users.size()<<endl;
     return issued_books;
 }
 void Deallocate_Book_to_User()
