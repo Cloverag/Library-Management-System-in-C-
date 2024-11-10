@@ -79,11 +79,13 @@ public:
         temp.push_back(this->return_date);
         return temp;
     }
-    void book_submitted(){
+    void book_submitted()
+    {
         time_t timestamp;
         time(&timestamp);
         string temp = ctime(&timestamp);
-        if(temp[temp.length() - 1] == '\n'){
+        if (temp[temp.length() - 1] == '\n')
+        {
             temp[temp.length() - 1] = NULL;
         }
         this->return_date = temp;
@@ -358,7 +360,6 @@ public:
     {
         this->ongoing_allocate_users++;
     }
-    
 };
 
 class Horror_book : public Books
@@ -487,10 +488,10 @@ vector<Historic_book> historic_book;
 vector<Issued_books> issued_books;
 
 void Add_Book(vector<Books> &books);
-vector<Books> Remove_Book(vector<Books> &books);
-vector<Users> Add_User(vector<Users> &users);
-vector<Users> Remove_User(vector<Users> &users);
-vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books);
+void Remove_Book(vector<Books> &books);
+void Add_User(vector<Users> &users);
+void Remove_User(vector<Users> &users);
+void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books);
 void Deallocate_Book_from_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books);
 void History_of_User(vector<Users> &users, string id);
 int get_no_of_lines(ifstream &User_data);
@@ -645,7 +646,7 @@ void Add_Book(vector<Books> &books)
     Book_data_edit << s;
     Book_data_edit.close();
 }
-vector<Books> Remove_Book(vector<Books> &books)
+void Remove_Book(vector<Books> &books)
 {
     cout << "Remove_Book called" << endl;
     string name;
@@ -674,9 +675,9 @@ vector<Books> Remove_Book(vector<Books> &books)
             cout << "User not found!!!!" << endl;
         }
     }
-    return books;
+    return;
 }
-vector<Users> Add_User(vector<Users> &users)
+void Add_User(vector<Users> &users)
 {
     cout << "Add_User called" << endl;
     ofstream User_data_edit("User_data.csv", ios::app);
@@ -695,7 +696,7 @@ vector<Users> Add_User(vector<Users> &users)
     if (index != -1)
     {
         cout << "A user with same id already exits" << endl;
-        return users;
+        return;
     }
     else
     {
@@ -707,9 +708,9 @@ vector<Users> Add_User(vector<Users> &users)
         User_data_edit << s;
         User_data_edit.close();
     }
-    return users;
+    return;
 }
-vector<Users> Remove_User(vector<Users> &users)
+void Remove_User(vector<Users> &users)
 {
     cout << "Remove_User called" << endl;
     string Id;
@@ -738,9 +739,9 @@ vector<Users> Remove_User(vector<Users> &users)
             cout << "User not found!!!!" << endl;
         }
     }
-    return users;
+    return;
 }
-vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books)
+void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books)
 {
     string user_id, book_name;
     cout << "Allocate_Book_to_User called" << endl;
@@ -754,13 +755,13 @@ vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &
     if (user_index == -1)
     {
         cout << "User doesn't exists" << endl;
-        return issued_books;
+        return;
     }
     int book_index = does_the_book_exists(book_name);
     if (book_index == -1)
     {
         cout << "Book doesn't exists" << endl;
-        return issued_books;
+        return;
     }
     // cout<<"2. Users.size = "<<users.size()<<endl;
     cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
@@ -783,7 +784,7 @@ vector<Issued_books> Allocate_Book_to_User(vector<Users> &users, vector<Books> &
     Update_csv_from_books(books);
 
     // cout<<"7. Users.size = "<<users.size()<<endl;
-    return issued_books;
+    return;
 }
 void Deallocate_Book_from_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books)
 {
@@ -804,12 +805,14 @@ void Deallocate_Book_from_User(vector<Users> &users, vector<Books> &books, vecto
     string user_id = temp[2];
     int user_index = does_the_user_exists(user_id);
     int book_index = does_the_book_exists(book_name);
-    if(user_index == -1){
-        cout<<"User doesn't exist"<<endl;
+    if (user_index == -1)
+    {
+        cout << "User doesn't exist" << endl;
         return;
     }
-    if(book_index == -1){
-        cout<<"Book doesn't exist"<<endl;
+    if (book_index == -1)
+    {
+        cout << "Book doesn't exist" << endl;
         return;
     }
     cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
@@ -1184,7 +1187,10 @@ int main()
         cout << "> Enter 15 to Show no of users" << endl;             // DONE
         cout << "> Enter 16 to Show no of books" << endl;             // DONE
         cout << "> Enter 17 to Show no of issued_books" << endl;      // DONE
-        cout << "> Enter 18 to Get data of issued book id" << endl    // DONE
+        cout << "> Enter 18 to Get data of issued book id" << endl;   // DONE
+        cout << "> Enter 19 to Update users from csv" << endl;   // DONE
+        cout << "> Enter 20 to Update books from csv" << endl;   // DONE
+        cout << "> Enter 21 to Update issued_books from csv" << endl    // DONE
              << endl;
         cout << " *************************************************** " << endl;
         cout << " Enter your choice :: ";
@@ -1198,16 +1204,16 @@ int main()
             Add_Book(books);
             break;
         case 2:
-            books = Remove_Book(books);
+            Remove_Book(books);
             break;
         case 3:
-            users = Add_User(users);
+            Add_User(users);
             break;
         case 4:
-            users = Remove_User(users);
+            Remove_User(users);
             break;
         case 5:
-            issued_books = Allocate_Book_to_User(users, books, issued_books);
+            Allocate_Book_to_User(users, books, issued_books);
             break;
         case 6:
             Deallocate_Book_from_User(users, books, issued_books);
@@ -1265,6 +1271,21 @@ int main()
                 cout << "Issued Book doesn't exist" << endl;
             }
             cout << "DATA = " << issued_books[index].get_issued_book_data() << endl;
+            break;
+        case 19:
+            // string temp = "";
+            Update_users(users);
+            cout << "Users updated from csv";
+            break;
+        case 20:
+            // string temp = "";
+            Update_Books(books);
+            cout << "Books updated from csv";
+            break;
+        case 21:
+            // string temp = "";
+            Update_Issued_Books(issued_books);
+            cout << "Issued Books updated from csv";
             break;
         default:
             cout << "Invalid Input" << endl;

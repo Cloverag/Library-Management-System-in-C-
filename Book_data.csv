@@ -1,7 +1,2 @@
 BOOK_NAME,AUTHOR,GENRE,SUBJECT,OV_ALLOCATED_USER_NO,ONGOING_ALLOCATED_USER_NO
-Valentino,Dhruv,Biography,Biography,0,0
-Bs Gerewal,Bs Gerewal,Maths,Maths,0,0
-RD Sharma,Sharmaji,Maths,Maths,0,1
-New Book,Dhruv,Bio,Bio,0,0
-Raghav_life,Raghav,Bio,Bio,1,2
-Timepass,Timepass,Timepass,Timepass,0,0
+Vanlentino,Dhruv,Bio,Bio,1,2
