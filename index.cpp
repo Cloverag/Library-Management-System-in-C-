@@ -156,7 +156,7 @@ public:
 
     void add_current_issued_books(string arr)
     {
-        if (arr == "NULL")
+        if (arr == "NULL" || arr == "")
         {
             return;
         }
@@ -174,7 +174,7 @@ public:
     }
     void add_all_issued_books(string arr)
     {
-        if (arr == "NULL")
+        if (arr == "NULL" || arr == "")
         {
             return;
         }
@@ -296,6 +296,8 @@ private:
     string author;
     string genre;
     string subject;
+    int total_no_books;
+    int available_no_books;
     int overall_allocate_users;
     int ongoing_allocate_users;
 
@@ -314,12 +316,14 @@ public:
         this->overall_allocate_users = overall_allocate_users;
         this->ongoing_allocate_users = ongoing_allocate_users;
     }
-    Books(string name, string author, string genre, string subject)
+    Books(string name, string author, string genre, string subject, int no)
     {
         this->name = name;
         this->author = author;
         this->genre = genre;
         this->subject = subject;
+        this->total_no_books = no;
+        this->available_no_books = no;
         this->overall_allocate_users = 0;
         this->ongoing_allocate_users = 0;
     }
@@ -330,8 +334,10 @@ public:
         this->author = arr[1];
         this->genre = arr[2];
         this->subject = arr[3];
-        this->overall_allocate_users = stoi(arr[4]);
-        this->ongoing_allocate_users = stoi(arr[5]);
+        this->available_no_books = stoi(arr[4]);
+        this->total_no_books = stoi(arr[5]);
+        this->overall_allocate_users = stoi(arr[6]);
+        this->ongoing_allocate_users = stoi(arr[7]);
     }
     void display_book_data()
     {
@@ -341,6 +347,8 @@ public:
              << "Author = " << this->author << endl
              << "Genre = " << this->genre << endl
              << "Subject = " << this->subject << endl
+             << "Available_no_books = " << this->available_no_books << endl
+             << "Total_no_books = " << this->total_no_books << endl
              << "Overall_allocate_users = " << this->overall_allocate_users << endl
              << "Ongoing_allocate_users = " << this->ongoing_allocate_users << endl;
         cout << endl;
@@ -348,17 +356,23 @@ public:
     string get_data_in_string()
     {
         string s = "";
-        s = name + "," + author + "," + genre + "," + subject + "," + to_string(overall_allocate_users) + "," + to_string(ongoing_allocate_users);
+        s = name + "," + author + "," + genre + "," + subject + "," + to_string(available_no_books) + "," + to_string(total_no_books) + "," + to_string(overall_allocate_users) + "," + to_string(ongoing_allocate_users);
         return s;
     }
     void add_ongoing_allocate_users()
     {
         this->ongoing_allocate_users++;
         this->overall_allocate_users++;
+        this->available_no_books--;
     }
     void remove_ongoing_allocate_users()
     {
+        this->available_no_books++;
         this->ongoing_allocate_users++;
+    }
+    int get_available_no_books()
+    {
+        return this->available_no_books;
     }
 };
 
@@ -516,12 +530,12 @@ int current_no = 0;
 void Update_Books(vector<Books> &books)
 {
     cout << "Update_Books called" << endl;
-    ifstream User_data("Book_data.csv");
+    ifstream Books_data("Book_data.csv");
     string s = "";
-    string arr[6];
-    getline(User_data, s);
+    string arr[8];
+    getline(Books_data, s);
     s = "";
-    while (getline(User_data, s))
+    while (getline(Books_data, s))
     {
         int i = 0;
         cout << "i = " << i << endl;
@@ -543,7 +557,7 @@ void Update_Books(vector<Books> &books)
         // books[current_no_books].display_book_data();
         current_no_books++;
     }
-    User_data.close();
+    Books_data.close();
 }
 void Update_users(vector<Users> &users)
 {
@@ -624,7 +638,8 @@ int get_no_of_lines(ifstream &file_name)
 
 void Add_Book(vector<Books> &books)
 {
-    ifstream Book_data("Book_data.csv");
+    // ifstream Book_data("Book_data.csv");
+    int no;
     string s = "", Name, Author = "", Subject = "", Genre = "";
     cout << "Book Name : ";
     cin.ignore();
@@ -635,15 +650,21 @@ void Add_Book(vector<Books> &books)
     getline(cin, Genre);
     cout << "SUBJECT : ";
     getline(cin, Subject);
-    cout << "before s = " << s << endl;
-    s = Name + "," + Author + "," + Genre + "," + Subject + ",0,0\n";
-    Book_data.close();
-    Books temp(Name, Author, Genre, Subject);
+    cout << "No of books: ";
+    cin >> no;
+    int i = does_the_book_exists(Name);
+    if (i != -1)
+    {
+        cout << "A book with same name already exists" << endl;
+        return;
+    }
+    // Book_data.close();
+    Books temp(Name, Author, Genre, Subject, no);
     books.push_back(temp);
     books[current_no_books].display_book_data();
     current_no_books++;
     ofstream Book_data_edit("Book_data.csv", ios::app);
-    Book_data_edit << s;
+    Book_data_edit << temp.get_data_in_string() << endl;
     Book_data_edit.close();
 }
 void Remove_Book(vector<Books> &books)
@@ -758,9 +779,15 @@ void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Is
         return;
     }
     int book_index = does_the_book_exists(book_name);
+    int no_of_books = books[book_index].get_available_no_books();
     if (book_index == -1)
     {
         cout << "Book doesn't exists" << endl;
+        return;
+    }
+    if (no_of_books <= 0)
+    {
+        cout << "No avaialable books" << endl;
         return;
     }
     // cout<<"2. Users.size = "<<users.size()<<endl;
@@ -1188,9 +1215,9 @@ int main()
         cout << "> Enter 16 to Show no of books" << endl;             // DONE
         cout << "> Enter 17 to Show no of issued_books" << endl;      // DONE
         cout << "> Enter 18 to Get data of issued book id" << endl;   // DONE
-        cout << "> Enter 19 to Update users from csv" << endl;   // DONE
-        cout << "> Enter 20 to Update books from csv" << endl;   // DONE
-        cout << "> Enter 21 to Update issued_books from csv" << endl    // DONE
+        cout << "> Enter 19 to Update users from csv" << endl;        // DONE
+        cout << "> Enter 20 to Update books from csv" << endl;        // DONE
+        cout << "> Enter 21 to Update issued_books from csv" << endl  // DONE
              << endl;
         cout << " *************************************************** " << endl;
         cout << " Enter your choice :: ";
