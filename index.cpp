@@ -318,6 +318,9 @@ public:
     }
     Books(string name, string author, string genre, string subject, int no)
     {
+        cout << "Parameterized constructor called" << endl;
+        cout << "genre = " << genre << endl;
+        cout << "subject = " << subject << endl;
         this->name = name;
         this->author = author;
         this->genre = genre;
@@ -588,10 +591,22 @@ public:
     }
 };
 
+int Educational_book::no_of_educational_books = 0;
+int Horror_book::no_of_horror_books = 0;
+int Adventure_book::no_of_adventure_books = 0;
+int Fantasy_book::no_of_fantasy_books = 0;
+int Science_Fiction_book::no_of_sci_fiction_books = 0;
+int Mystery_book::no_of_mystery_books = 0;
+int Thriller_Suspense_book::no_of_thriller_books = 0;
+int Historical_Fiction_book::no_of_history_books = 0;
+int Romance_Book::no_of_romance_books = 0;
+int Graphic_Novel::no_of_graphic_books = 0;
+int Other_book::no_of_other_books = 0;
+
 vector<Users> users;
 vector<Books> books;
 vector<Issued_books> issued_books;
-vector<Educational_book> eductaional_books;
+vector<Educational_book> educational_books;
 vector<Horror_book> horror_books;
 vector<Adventure_book> adventure_books;
 vector<Fantasy_book> fantasy_books;
@@ -740,7 +755,7 @@ int get_no_of_lines(ifstream &file_name)
 
 void Add_Book(vector<Books> &books)
 {
-    Books *book = nullptr;
+    Books *book;
     // ifstream Book_data("Book_data.csv");
     int no, k;
     string s = "", Name, Author = "", Subject = "", Genre = "", temp;
@@ -752,20 +767,20 @@ void Add_Book(vector<Books> &books)
     cout << "GENRE :" << endl;
     while (k != 1 && k != 2 && k != 3 && k != 4 && k != 5 && k != 6 && k != 7 && k != 8 && k != 9 && k != 10 || k != 11)
     {
-        cout << "1. Educational Book" << endl;
-        cout << "2. Action & Adventure Book" << endl;
-        cout << "3. Fantasy Book" << endl;
-        cout << "4. Science Fiction Book" << endl;
-        cout << "5. Mystery Book" << endl;
-        cout << "6. Horror Book" << endl;
-        cout << "7. Thriller & Suspense Book" << endl;
-        cout << "8. Historical Fiction Book" << endl;
-        cout << "9. Romance Book" << endl;
-        cout << "10. Graphic Novel" << endl;
-        cout << "11. Other" << endl
+        cout << ">>>    1. Educational Book" << endl;
+        cout << ">>>    2. Action & Adventure Book" << endl;
+        cout << ">>>    3. Fantasy Book" << endl;
+        cout << ">>>    4. Science Fiction Book" << endl;
+        cout << ">>>    5. Mystery Book" << endl;
+        cout << ">>>    6. Horror Book" << endl;
+        cout << ">>>    7. Thriller & Suspense Book" << endl;
+        cout << ">>>    8. Historical Fiction Book" << endl;
+        cout << ">>>    9. Romance Book" << endl;
+        cout << ">>>    10. Graphic Novel" << endl;
+        cout << ">>>    11. Other" << endl
              << endl;
         cout << " --->>> Please enter your choice : ";
-        cin >> k;
+        cin >> temp;
         if (temp == "1" || temp == "2" || temp == "3" || temp == "4" || temp == "5" || temp == "6" || temp == "7" || temp == "8" || temp == "9" || temp == "10" || temp == "11")
         {
             // cout << "You have entered a valid number." << endl;
@@ -777,12 +792,15 @@ void Add_Book(vector<Books> &books)
             cout << "*****You have not entered a valid number*****" << endl;
             continue;
         }
-        if (k == 11)
-        {
-            getline(cin, Genre);
-        }
+    }
+    if (k == 11)
+    {
+        cout << ">-- Genre = ";
+        cin.ignore();
+        getline(cin, Genre);
     }
     cout << "SUBJECT : ";
+    cin.ignore();
     getline(cin, Subject);
     cout << "No of books: ";
     cin >> no;
@@ -797,38 +815,158 @@ void Add_Book(vector<Books> &books)
     {
     case 1:
         book = new Educational_book(Name, Author, Subject, no);
-        cout<<"Book_data = "<<book->get_data_in_string()<<endl;
-        // eductaional_books.push_back(book);
+
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Educational_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Educational_book *)book;
+            educational_books.push_back(*tempp);
+            cout << "Edu Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 2:
         book = new Adventure_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Adventure_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Adventure_book *)book;
+            adventure_books.push_back(*tempp);
+            cout << "Adventure Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 3:
         book = new Fantasy_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Fantasy_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Fantasy_book *)book;
+            fantasy_books.push_back(*tempp);
+            cout << "Fantasy Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 4:
         book = new Science_Fiction_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Science_Fiction_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Science_Fiction_book *)book;
+            science_fiction_books.push_back(*tempp);
+            cout << "Sci-Fi Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 5:
         book = new Mystery_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Mystery_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Mystery_book *)book;
+            mystery_books.push_back(*tempp);
+            cout << "Mystery Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 6:
         book = new Horror_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Horror_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Horror_book *)book;
+            horror_books.push_back(*tempp);
+            cout << "Horror Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 7:
         book = new Thriller_Suspense_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Thriller_Suspense_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Thriller_Suspense_book *)book;
+            thriller_suspense_books.push_back(*tempp);
+            cout << "Thriller & Suspense Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 8:
         book = new Historical_Fiction_book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Historical_Fiction_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Historical_Fiction_book *)book;
+            historical_fiction_books.push_back(*tempp);
+            cout << "Historical Fiction Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 9:
         book = new Romance_Book(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Romance_Book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Romance_Book *)book;
+            romance_books.push_back(*tempp);
+            cout << "Romantic Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 10:
         book = new Graphic_Novel(Name, Author, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Graphic_Novel *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Graphic_Novel *)book;
+            graphic_novels.push_back(*tempp);
+            cout << "Graphic Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     case 11:
-        book = new Other_book(Name, Author,Genre, Subject, no);
+        book = new Other_book(Name, Author, Genre, Subject, no);
+        if (book != nullptr)
+        {
+            cout << "Book data = " << book->get_data_in_string() << endl;
+            books.push_back(*book);
+            Other_book *tempp;
+            // Converting the base class pointer to derived class pointer
+            // to store in the specific vector
+            tempp = (Other_book *)book;
+            Other_books.push_back(*tempp);
+            cout << "Other Book data = " << tempp->get_data_in_string() << endl;
+        }
         break;
     default:
         cout << "Please enter a valid number" << endl;
@@ -838,12 +976,12 @@ void Add_Book(vector<Books> &books)
     // getline(cin, Genre);
     // switch()
     // Book_data.close();
-    Books tempp(Name, Author, Genre, Subject, no);
-    books.push_back(tempp);
-    books[current_no_books].display_book_data();
-    current_no_books++;
+    // Books tempp(Name, Author, Genre, Subject, no);
+    // books.push_back(tempp);
+
     ofstream Book_data_edit("Book_data.csv", ios::app);
-    Book_data_edit << tempp.get_data_in_string() << endl;
+    Book_data_edit << books[current_no_books].get_data_in_string() << endl;
+    current_no_books++;
     Book_data_edit.close();
 }
 void Remove_Book(vector<Books> &books)
