@@ -577,8 +577,7 @@ public:
 // int Thriller_Suspense_book::no_of_thriller_books = 0;
 
 // Template function to compare total number of books based on genre
-template <typename GenreType>
-bool compareTotalBooks(const Books &book, GenreType genre)
+template <typename GenreType> bool compareTotalBooks(const Books &book, GenreType genre)
 {
     // Check if the book's genre matches the provided genre type
     if (book.getGenre() == genre)
@@ -644,6 +643,9 @@ int get_index_of_issued_book(string id);
 int does_the_issued_book_exists(string id);
 int current_no = 0;
 
+
+
+//Makes Books classes by taking data from csv Books file and stores the classses in books vector
 void Update_Books(vector<Books *> &books)
 {
     cout << "Update_Books called" << endl;
@@ -712,6 +714,8 @@ void Update_Books(vector<Books *> &books)
     }
     Books_data.close();
 }
+
+// Makes Users classes by taking data from csv Users file and stores the classes in users vector
 void Update_users(vector<Users> &users)
 {
     cout << "Update_users called" << endl;
@@ -744,7 +748,7 @@ void Update_users(vector<Users> &users)
     }
     User_data.close();
 }
-
+// Makes Issued_book classes by taking data from csv Issued_book file and stores the classes in issued_book vector
 void Update_Issued_Books(vector<Issued_books> &issued_books)
 {
     cout << "Update_Books called" << endl;
@@ -777,6 +781,7 @@ void Update_Issued_Books(vector<Issued_books> &issued_books)
     }
 }
 
+//returns length of lines in particular file
 int get_no_of_lines(ifstream &file_name)
 {
     cout << "get_no_of_lines called" << endl;
@@ -789,6 +794,7 @@ int get_no_of_lines(ifstream &file_name)
     return no_of_lines;
 }
 
+//Adds book in database as well as in vector
 void Add_Book(vector<Books *> &books)
 {
     Books *book;
@@ -973,6 +979,8 @@ void Add_Book(vector<Books *> &books)
     current_no_books++;
     Book_data_edit.close();
 }
+
+// Removes book from database as well as from vector
 void Remove_Book(vector<Books *> &books)
 {
     cout << "Remove_Book called" << endl;
@@ -1005,6 +1013,8 @@ void Remove_Book(vector<Books *> &books)
     }
     return;
 }
+
+// Adds User in database as well as in vector
 void Add_User(vector<Users> &users)
 {
     cout << "Add_User called" << endl;
@@ -1042,6 +1052,8 @@ void Add_User(vector<Users> &users)
     }
     return;
 }
+
+// Remove User from database as well as from vector
 void Remove_User(vector<Users> &users)
 {
     cout << "Remove_User called" << endl;
@@ -1073,6 +1085,8 @@ void Remove_User(vector<Users> &users)
     }
     return;
 }
+
+//Allocates book to the user id the user and the book exists
 void Allocate_Book_to_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books)
 {
     string user_id, book_name;
@@ -1126,6 +1140,8 @@ void Allocate_Book_to_User(vector<Users> &users, vector<Books *> &books, vector<
     // cout<<"7. Users.size = "<<users.size()<<endl;
     return;
 }
+
+// Deallocates book form the user if the issued book exists
 void Deallocate_Book_from_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books)
 {
     cout << "Deallocate_Book_from_User called" << endl;
@@ -1171,6 +1187,8 @@ void Deallocate_Book_from_User(vector<Users> &users, vector<Books *> &books, vec
     //     return;
     // }
 }
+
+// Shows data of particular user
 void History_of_User(vector<Users> &users, string id)
 {
     int index = does_the_user_exists(id);
@@ -1183,6 +1201,8 @@ void History_of_User(vector<Users> &users, string id)
         cout << "User not found" << endl;
     }
 }
+
+// Shows data of particular book
 void History_of_Book(vector<Books *> &books, string name)
 {
     int index = does_the_book_exists(name);
@@ -1196,6 +1216,7 @@ void History_of_Book(vector<Books *> &books, string name)
     }
 }
 
+//Checks if the user exist  by giving -1(is it doesn't) and gives any other numbetr if it does
 int does_the_user_exists(string id)
 {
     cout << "does_the_user_exists called" << endl;
@@ -1219,6 +1240,8 @@ int does_the_user_exists(string id)
     }
     return -1;
 }
+
+// Checks if the book exist  by giving -1(is it doesn't) and gives any other numbetr if it does
 int does_the_book_exists(string name)
 {
     cout << "does_the_book_exists called name = " << name << endl;
@@ -1247,6 +1270,7 @@ int does_the_book_exists(string name)
     return -1;
 }
 
+//Shows all users data
 void show_all_users(vector<Users> &users)
 {
     int i = 0;
@@ -1258,6 +1282,8 @@ void show_all_users(vector<Users> &users)
         i++;
     }
 }
+
+// Shows all books data
 void show_all_books(vector<Books *> &books)
 {
     int i = 0;
@@ -1270,6 +1296,7 @@ void show_all_books(vector<Books *> &books)
     }
 }
 
+// Shows all issued_book data
 void show_all_issued_books(vector<Issued_books> &issued_books)
 {
     cout << "show_all_issued_books called" << endl;
@@ -1282,6 +1309,7 @@ void show_all_issued_books(vector<Issued_books> &issued_books)
     }
 }
 
+//Used internally to remove user from csv file
 void Remove_user_from_csv(vector<Users> &users, string id)
 {
 
@@ -1336,6 +1364,8 @@ void Remove_user_from_csv(vector<Users> &users, string id)
     }
     User_data_edit.close();
 }
+
+// Used internally to remove book from csv file
 void Remove_book_from_csv(vector<Books *> &books, string name)
 {
     cout << "Remove_book_from_csv called" << endl;
@@ -1390,6 +1420,7 @@ void Remove_book_from_csv(vector<Books *> &books, string name)
     Book_data_edit.close();
 }
 
+// Updates csvs from the existing users data
 void Update_csv_from_users(vector<Users> &users)
 {
     ofstream User_data_edit("User_data.csv");
@@ -1405,6 +1436,8 @@ void Update_csv_from_users(vector<Users> &users)
     }
     User_data_edit.close();
 }
+
+// Updates csv from the existing books data
 void Update_csv_from_books(vector<Books *> &books)
 {
     ofstream Book_data_edit("Book_data.csv");
@@ -1420,6 +1453,7 @@ void Update_csv_from_books(vector<Books *> &books)
     Book_data_edit.close();
 }
 
+// Updates csv from the existing issued_books data
 void Update_csv_from_issued_books(vector<Issued_books> &issued_books)
 {
     cout << "Update_csv_from_issued_books called" << endl;
@@ -1436,6 +1470,7 @@ void Update_csv_from_issued_books(vector<Issued_books> &issued_books)
     Issued_book_data_edit.close();
 }
 
+//Internally adds issued book data in the issued_books csv
 void add_issued_book_data(string data)
 {
     cout << "add_issued_book_data called" << endl;
@@ -1444,6 +1479,7 @@ void add_issued_book_data(string data)
     Issue_book.close();
 }
 
+// Checks if the issued_book exist  by giving -1(is it doesn't) and gives any other numbetr if it does
 int get_index_of_issued_book(string id)
 {
     cout << "get_index_of_issued_book called" << endl;
@@ -1472,6 +1508,7 @@ int get_index_of_issued_book(string id)
     return -1;
 }
 
+// Checks if the issued_book exist  by giving -1(is it doesn't) and gives any other numbetr if it does
 int does_the_issued_book_exists(string id)
 {
     cout << "does_the_issued_book_exists called" << endl;
@@ -1496,6 +1533,7 @@ int does_the_issued_book_exists(string id)
     return -1;
 }
 
+// Updates users form teh User_data csv file
 void Update_users_from_csv(vector<Users> &users)
 {
     if (users.size() != 0)
@@ -1510,6 +1548,7 @@ void Update_users_from_csv(vector<Users> &users)
     Update_users(users);
 }
 
+// replaced char c1 to char c2
 string replace(string s, char c1, char c2)
 {
     int l = s.length();
@@ -1527,6 +1566,8 @@ string replace(string s, char c1, char c2)
     }
     return s;
 }
+
+// does verify if the input have ',' in init
 string input_check(string input)
 {
     char del = ',';
