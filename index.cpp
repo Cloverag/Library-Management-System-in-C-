@@ -127,8 +127,6 @@ public:
         this->email = email;
         this->current_books_no = current_books_no;
         this->all_books_no = all_books_no;
-        // this->current_books_names = current_books_names;
-        // this->all_books_names = all_books_names;
     }
     Users(string arr[])
     {
@@ -152,8 +150,6 @@ public:
         this->email = email;
         this->current_books_no = 0;
         this->all_books_no = 0;
-        // this->current_books_issue_id = 0;
-        // this->all_books_issue_id = 0;
     }
 
     void add_current_issued_books(string arr)
@@ -402,7 +398,6 @@ public:
     }
     int get_available_no_books() const { return available_no_books; }
 };
-
 // Derived class from Books - Inheritance
 class Educational_book : public Books
 {
@@ -577,7 +572,8 @@ public:
 // int Thriller_Suspense_book::no_of_thriller_books = 0;
 
 // Template function to compare total number of books based on genre
-template <typename GenreType> bool compareTotalBooks(const Books &book, GenreType genre)
+template <typename GenreType>
+bool compareTotalBooks(const Books &book, GenreType genre)
 {
     // Check if the book's genre matches the provided genre type
     if (book.getGenre() == genre)
@@ -643,9 +639,7 @@ int get_index_of_issued_book(string id);
 int does_the_issued_book_exists(string id);
 int current_no = 0;
 
-
-
-//Makes Books classes by taking data from csv Books file and stores the classses in books vector
+// Makes Books classes by taking data from csv Books file and stores the classses in books vector
 void Update_Books(vector<Books *> &books)
 {
     cout << "Update_Books called" << endl;
@@ -781,7 +775,7 @@ void Update_Issued_Books(vector<Issued_books> &issued_books)
     }
 }
 
-//returns length of lines in particular file
+// returns length of lines in particular file
 int get_no_of_lines(ifstream &file_name)
 {
     cout << "get_no_of_lines called" << endl;
@@ -794,7 +788,7 @@ int get_no_of_lines(ifstream &file_name)
     return no_of_lines;
 }
 
-//Adds book in database as well as in vector
+// Adds book in database as well as in vector
 void Add_Book(vector<Books *> &books)
 {
     Books *book;
@@ -1086,7 +1080,7 @@ void Remove_User(vector<Users> &users)
     return;
 }
 
-//Allocates book to the user id the user and the book exists
+// Allocates book to the user id the user and the book exists
 void Allocate_Book_to_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books)
 {
     string user_id, book_name;
@@ -1216,7 +1210,7 @@ void History_of_Book(vector<Books *> &books, string name)
     }
 }
 
-//Checks if the user exist  by giving -1(is it doesn't) and gives any other numbetr if it does
+// Checks if the user exist  by giving -1(is it doesn't) and gives any other numbetr if it does
 int does_the_user_exists(string id)
 {
     cout << "does_the_user_exists called" << endl;
@@ -1270,7 +1264,7 @@ int does_the_book_exists(string name)
     return -1;
 }
 
-//Shows all users data
+// Shows all users data
 void show_all_users(vector<Users> &users)
 {
     int i = 0;
@@ -1309,7 +1303,7 @@ void show_all_issued_books(vector<Issued_books> &issued_books)
     }
 }
 
-//Used internally to remove user from csv file
+// Used internally to remove user from csv file
 void Remove_user_from_csv(vector<Users> &users, string id)
 {
 
@@ -1470,7 +1464,7 @@ void Update_csv_from_issued_books(vector<Issued_books> &issued_books)
     Issued_book_data_edit.close();
 }
 
-//Internally adds issued book data in the issued_books csv
+// Internally adds issued book data in the issued_books csv
 void add_issued_book_data(string data)
 {
     cout << "add_issued_book_data called" << endl;
