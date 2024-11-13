@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <typeinfo>
 #include <ctime>
+#include <memory>
+#include <stdexcept>
 
 using namespace std;
 
@@ -42,7 +44,7 @@ public:
         if (temp[temp.length() - 1] == '\n')
         {
             cout << "If called" << endl;
-            temp[temp.length() - 1] = NULL;
+            temp[temp.length() - 1] = '\0';
         }
         this->issue_id = this->generate_issued_id(name, idd);
         this->book_name = name;
@@ -86,7 +88,7 @@ public:
         string temp = ctime(&timestamp);
         if (temp[temp.length() - 1] == '\n')
         {
-            temp[temp.length() - 1] = NULL;
+            temp[temp.length() - 1] = '\0';
         }
         this->return_date = temp;
     }
@@ -290,9 +292,10 @@ public:
         }
     }
 };
+
 class Books
 {
-private:
+protected:
     string author;
     string genre;
     string subject;
@@ -303,49 +306,80 @@ private:
 
 public:
     string name;
+    virtual ~Books() = default; // Virtual destructor
+    virtual void display_book_info() const = 0;
+
     Books()
     {
         cout << "Books default constructor called" << endl;
     }
+
+    // Parameterized constructor
     Books(string name, string author, string genre, string subject, int overall_allocate_users, int ongoing_allocate_users)
-    {
-        this->name = name;
-        this->author = author;
-        this->genre = genre;
-        this->subject = subject;
-        this->overall_allocate_users = overall_allocate_users;
-        this->ongoing_allocate_users = ongoing_allocate_users;
-    }
+        : name(name), author(author), genre(genre), subject(subject),
+          overall_allocate_users(overall_allocate_users), ongoing_allocate_users(ongoing_allocate_users) {}
+
+    // Another parameterized constructor
     Books(string name, string author, string genre, string subject, int no)
-    {
-        cout << "Parameterized constructor called" << endl;
-        cout << "genre = " << genre << endl;
-        cout << "subject = " << subject << endl;
-        this->name = name;
-        this->author = author;
-        this->genre = genre;
-        this->subject = subject;
-        this->total_no_books = no;
-        this->available_no_books = no;
-        this->overall_allocate_users = 0;
-        this->ongoing_allocate_users = 0;
-    }
+        : name(name), author(author), genre(genre), subject(subject),
+          total_no_books(no), available_no_books(no), overall_allocate_users(0), ongoing_allocate_users(0) {}
+
+    // Constructor with exception handling
     Books(string arr[])
     {
-        cout << "Users array contructor called" << endl;
-        this->name = arr[0];
-        this->author = arr[1];
-        this->genre = arr[2];
-        this->subject = arr[3];
-        this->available_no_books = stoi(arr[4]);
-        this->total_no_books = stoi(arr[5]);
-        this->overall_allocate_users = stoi(arr[6]);
-        this->ongoing_allocate_users = stoi(arr[7]);
+        try
+        {
+            this->name = arr[0];
+            this->author = arr[1];
+            this->genre = arr[2];
+            this->subject = arr[3];
+            this->available_no_books = stoi(arr[4]);
+            this->total_no_books = stoi(arr[5]);
+            this->overall_allocate_users = stoi(arr[6]);
+            this->ongoing_allocate_users = stoi(arr[7]);
+        }
+        catch (const exception &e)
+        {
+            throw runtime_error("Error in Books constructor: " + string(e.what()));
+        }
     }
-    void display_book_data()
+
+    // Encapsulation: Public method to modify private members
+    void add_ongoing_allocate_users()
     {
-        cout << endl;
-        //  << "display_user_data called" << endl;
+        try
+        {
+            if (available_no_books <= 0)
+                throw runtime_error("No available books to allocate.");
+            this->ongoing_allocate_users++;
+            this->overall_allocate_users++;
+            this->available_no_books--;
+        }
+        catch (const exception &e)
+        {
+            throw runtime_error("Error in add_ongoing_allocate_users: " + string(e.what()));
+        }
+    }
+
+    // Exception handling example
+    void remove_ongoing_allocate_users()
+    {
+        try
+        {
+            if (ongoing_allocate_users <= 0)
+                throw runtime_error("No ongoing allocations to remove.");
+            this->available_no_books++;
+            this->ongoing_allocate_users--;
+        }
+        catch (const exception &e)
+        {
+            throw runtime_error("Error in remove_ongoing_allocate_users: " + string(e.what()));
+        }
+    }
+
+    // Polymorphism: Overridable function display_book_info
+    virtual void display_book_data() const
+    {
         cout << "Name = " << this->name << endl
              << "Author = " << this->author << endl
              << "Genre = " << this->genre << endl
@@ -353,243 +387,211 @@ public:
              << "Available_no_books = " << this->available_no_books << endl
              << "Total_no_books = " << this->total_no_books << endl
              << "Overall_allocate_users = " << this->overall_allocate_users << endl
-             << "Ongoing_allocate_users = " << this->ongoing_allocate_users << endl;
-        cout << endl;
+             << "Ongoing_allocate_users = " << this->ongoing_allocate_users << endl
+             << endl;
     }
-    string get_data_in_string()
+
+    // Getter functions for protected members
+    string getGenre() const { return genre; }
+    int getTotalNoBooks() const { return total_no_books; }
+    string get_data_in_string() const
     {
-        string s = "";
-        s = name + "," + author + "," + genre + "," + subject + "," + to_string(available_no_books) + "," + to_string(total_no_books) + "," + to_string(overall_allocate_users) + "," + to_string(ongoing_allocate_users);
-        return s;
+        return name + "," + author + "," + genre + "," + subject + "," +
+               to_string(available_no_books) + "," + to_string(total_no_books) + "," +
+               to_string(overall_allocate_users) + "," + to_string(ongoing_allocate_users);
     }
-    void add_ongoing_allocate_users()
-    {
-        this->ongoing_allocate_users++;
-        this->overall_allocate_users++;
-        this->available_no_books--;
-    }
-    void remove_ongoing_allocate_users()
-    {
-        this->available_no_books++;
-        this->ongoing_allocate_users++;
-    }
-    int get_available_no_books()
-    {
-        return this->available_no_books;
-    }
+    int get_available_no_books() const { return available_no_books; }
 };
 
+// Derived class from Books - Inheritance
 class Educational_book : public Books
 {
     string book_name;
 
 public:
     static int no_of_educational_books;
-    Educational_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Educational book", subject, total_no_books)
+
+    Educational_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Educational book", subject, total_no_books), book_name(name)
     {
-        this->book_name = name;
-        if (Educational_book ::no_of_educational_books == 0 || Educational_book ::no_of_educational_books == NULL)
-        {
-            Educational_book ::no_of_educational_books == 1;
-        }
-        else
-        {
-            Educational_book ::no_of_educational_books++;
-        }
+        no_of_educational_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Educational Book Info:" << endl;
+        display_book_data();
     }
 };
+// int Educational_book::no_of_educational_books = 0;
+
 class Horror_book : public Books
 {
     string horror_book_name;
 
 public:
     static int no_of_horror_books;
-    Horror_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Horror book", subject, total_no_books)
+
+    Horror_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Horror book", subject, total_no_books), horror_book_name(name)
     {
-        this->horror_book_name = name;
-        if (Horror_book ::no_of_horror_books == 0 || Horror_book ::no_of_horror_books == NULL)
-        {
-            Horror_book ::no_of_horror_books == 1;
-        }
-        else
-        {
-            Horror_book ::no_of_horror_books++;
-        }
+        no_of_horror_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Horror Book Info:" << endl;
+        display_book_data();
     }
 };
+// int Horror_book::no_of_horror_books = 0;
+
 class Adventure_book : public Books
 {
     string adventure_book_name;
 
 public:
     static int no_of_adventure_books;
-    Adventure_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Action & Adventure book", subject, total_no_books)
+
+    Adventure_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Adventure book", subject, total_no_books), adventure_book_name(name)
     {
-        this->adventure_book_name = name;
-        if (Adventure_book ::no_of_adventure_books == 0 || Adventure_book ::no_of_adventure_books == NULL)
-        {
-            Adventure_book ::no_of_adventure_books == 1;
-        }
-        else
-        {
-            Adventure_book ::no_of_adventure_books++;
-        }
+        no_of_adventure_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Adventure Book Info:" << endl;
+        display_book_data();
+    }
+
+    void display_book_info(string additional_info) const
+    {
+        cout << additional_info << endl;
+        display_book_info();
     }
 };
+// int Adventure_book::no_of_adventure_books = 0;
+
 class Fantasy_book : public Books
 {
     string book_name;
 
 public:
     static int no_of_fantasy_books;
-    Fantasy_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Fantasy book", subject, total_no_books)
+
+    Fantasy_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Fantasy book", subject, total_no_books), book_name(name)
     {
-        this->book_name = name;
-        if (Fantasy_book ::no_of_fantasy_books == 0 || Fantasy_book ::no_of_fantasy_books == NULL)
-        {
-            Fantasy_book ::no_of_fantasy_books == 1;
-        }
-        else
-        {
-            Fantasy_book ::no_of_fantasy_books++;
-        }
+        no_of_fantasy_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Fantasy Book Info:" << endl;
+        display_book_data();
     }
 };
+// int Fantasy_book::no_of_fantasy_books = 0;
+
 class Science_Fiction_book : public Books
 {
     string book_name;
 
 public:
     static int no_of_sci_fiction_books;
-    Science_Fiction_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Science Fiction book", subject, total_no_books)
+
+    Science_Fiction_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Science Fiction book", subject, total_no_books), book_name(name)
     {
-        this->book_name = name;
-        if (Science_Fiction_book ::no_of_sci_fiction_books == 0 || Science_Fiction_book ::no_of_sci_fiction_books == NULL)
-        {
-            Science_Fiction_book ::no_of_sci_fiction_books == 1;
-        }
-        else
-        {
-            Science_Fiction_book ::no_of_sci_fiction_books++;
-        }
+        no_of_sci_fiction_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Science Fiction Book Info:" << endl;
+        display_book_data();
     }
 };
+// int Science_Fiction_book::no_of_sci_fiction_books = 0;
+
 class Mystery_book : public Books
 {
     string book_name;
 
 public:
     static int no_of_mystery_books;
-    Mystery_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Mystery book", subject, total_no_books)
+
+    Mystery_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Mystery book", subject, total_no_books), book_name(name)
     {
-        this->book_name = name;
-        if (Mystery_book ::no_of_mystery_books == 0 || Mystery_book ::no_of_mystery_books == NULL)
-        {
-            Mystery_book ::no_of_mystery_books == 1;
-        }
-        else
-        {
-            Mystery_book ::no_of_mystery_books++;
-        }
+        no_of_mystery_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Mystery Book Info:" << endl;
+        display_book_data();
     }
 };
+// int Mystery_book::no_of_mystery_books = 0;
+
 class Thriller_Suspense_book : public Books
 {
     string book_name;
 
 public:
     static int no_of_thriller_books;
-    Thriller_Suspense_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Thriller & Suspense book", subject, total_no_books)
-    {
-        this->book_name = name;
-        if (Thriller_Suspense_book ::no_of_thriller_books == 0 || Thriller_Suspense_book ::no_of_thriller_books == NULL)
-        {
-            Thriller_Suspense_book ::no_of_thriller_books == 1;
-        }
-        else
-        {
-            Thriller_Suspense_book ::no_of_thriller_books++;
-        }
-    }
-};
-class Historical_Fiction_book : public Books
-{
-    string book_name;
 
-public:
-    static int no_of_history_books;
-    Historical_Fiction_book(string name, string author, string subject, int total_no_books) : Books(name, author, "Historical fiction book", subject, total_no_books)
+    Thriller_Suspense_book(string name, string author, string subject, int total_no_books)
+        : Books(name, author, "Thriller & Suspense book", subject, total_no_books), book_name(name)
     {
-        this->book_name = name;
-        if (Historical_Fiction_book ::no_of_history_books == 0 || Historical_Fiction_book ::no_of_history_books == NULL)
-        {
-            Historical_Fiction_book ::no_of_history_books == 1;
-        }
-        else
-        {
-            Historical_Fiction_book ::no_of_history_books++;
-        }
+        no_of_thriller_books++;
     }
-};
-class Romance_Book : public Books
-{
-    string book_name;
 
-public:
-    static int no_of_romance_books;
-    Romance_Book(string name, string author, string subject, int total_no_books) : Books(name, author, "Romance book", subject, total_no_books)
+    void display_book_info() const override
     {
-        this->book_name = name;
-        if (Romance_Book ::no_of_romance_books == 0 || Romance_Book ::no_of_romance_books == NULL)
-        {
-            Romance_Book ::no_of_romance_books == 1;
-        }
-        else
-        {
-            Romance_Book ::no_of_romance_books++;
-        }
-    }
-};
-class Graphic_Novel : public Books
-{
-    string book_name;
-
-public:
-    static int no_of_graphic_books;
-    Graphic_Novel(string name, string author, string subject, int total_no_books) : Books(name, author, "Graphic Novel", subject, total_no_books)
-    {
-        this->book_name = name;
-        if (Graphic_Novel ::no_of_graphic_books == 0 || Graphic_Novel ::no_of_graphic_books == NULL)
-        {
-            Graphic_Novel ::no_of_graphic_books == 1;
-        }
-        else
-        {
-            Graphic_Novel ::no_of_graphic_books++;
-        }
+        cout << "Thriller & Suspense Book Info:" << endl;
+        display_book_data();
     }
 };
 class Other_book : public Books
 {
     string book_name;
-    string genre;
 
 public:
     static int no_of_other_books;
-    Other_book(string name, string author, string genree, string subject, int total_no_books) : Books(name, author, genree, subject, total_no_books)
+
+    Other_book(string name, string author, string genre, string subject, int total_no_books)
+        : Books(name, author, genre, subject, total_no_books), book_name(name)
     {
-        this->book_name = name;
-        this->genre = genree;
-        if (Other_book ::no_of_other_books == 0 || Other_book ::no_of_other_books == NULL)
-        {
-            Other_book ::no_of_other_books == 1;
-        }
-        else
-        {
-            Other_book ::no_of_other_books++;
-        }
+        no_of_other_books++;
+    }
+
+    void display_book_info() const override
+    {
+        cout << "Other Book Info:" << endl;
+        display_book_data();
     }
 };
+// int Thriller_Suspense_book::no_of_thriller_books = 0;
+
+// Template function to compare total number of books based on genre
+template <typename GenreType>
+bool compareTotalBooks(const Books &book, GenreType genre)
+{
+    // Check if the book's genre matches the provided genre type
+    if (book.getGenre() == genre)
+    {
+        cout << "Total number of books in genre '" << genre << "' is: " << book.getTotalNoBooks() << endl;
+        return true;
+    }
+    else
+    {
+        cout << "The book's genre does not match the given genre type '" << genre << "'." << endl;
+        return false;
+    }
+}
 
 int Educational_book::no_of_educational_books = 0;
 int Horror_book::no_of_horror_books = 0;
@@ -598,59 +600,57 @@ int Fantasy_book::no_of_fantasy_books = 0;
 int Science_Fiction_book::no_of_sci_fiction_books = 0;
 int Mystery_book::no_of_mystery_books = 0;
 int Thriller_Suspense_book::no_of_thriller_books = 0;
-int Historical_Fiction_book::no_of_history_books = 0;
-int Romance_Book::no_of_romance_books = 0;
-int Graphic_Novel::no_of_graphic_books = 0;
 int Other_book::no_of_other_books = 0;
 
+// Vector declarations using pointers
 vector<Users> users;
-vector<Books> books;
+vector<Books *> books;
 vector<Issued_books> issued_books;
-vector<Educational_book> educational_books;
-vector<Horror_book> horror_books;
-vector<Adventure_book> adventure_books;
-vector<Fantasy_book> fantasy_books;
-vector<Science_Fiction_book> science_fiction_books;
-vector<Mystery_book> mystery_books;
-vector<Thriller_Suspense_book> thriller_suspense_books;
-vector<Historical_Fiction_book> historical_fiction_books;
-vector<Romance_Book> romance_books;
-vector<Graphic_Novel> graphic_novels;
-vector<Other_book> Other_books;
-
-void Add_Book(vector<Books> &books);
-void Remove_Book(vector<Books> &books);
+vector<Educational_book *> educational_books;
+vector<Horror_book *> horror_books;
+vector<Adventure_book *> adventure_books;
+vector<Fantasy_book *> fantasy_books;
+vector<Science_Fiction_book *> science_fiction_books;
+vector<Mystery_book *> mystery_books;
+vector<Thriller_Suspense_book *> thriller_suspense_books;
+vector<Other_book *> other_books;
+// vector<Historical_Fiction_book*> historical_fiction_books;
+// vector<Romance_Book*> romance_books;
+// vector<Graphic_Novel*> graphic_novels;
+string input_check(string input);
+void Add_Book(vector<Books *> &books);
+void Remove_Book(vector<Books *> &books);
 void Add_User(vector<Users> &users);
 void Remove_User(vector<Users> &users);
-void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books);
-void Deallocate_Book_from_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books);
+void Allocate_Book_to_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books);
+void Deallocate_Book_from_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books);
 void History_of_User(vector<Users> &users, string id);
 int get_no_of_lines(ifstream &User_data);
 void Update_users(vector<Users> &users);
-void Update_Books(vector<Books> &books);
+void Update_Books(vector<Books *> &books);
 void Update_Issued_Books(vector<Issued_books> &issued_books);
 int does_the_user_exists(string id);
 int does_the_book_exists(string name);
 void show_all_users(vector<Users> &users);
-void show_all_books(vector<Books> &books);
+void show_all_books(vector<Books *> &books);
 void show_all_issued_books(vector<Issued_books> &issued_books);
 void Remove_user_from_csv(vector<Users> &users, string id);
-void Remove_book_from_csv(vector<Books> &books, string name);
+void Remove_book_from_csv(vector<Books *> &books, string name);
 void Update_csv_from_users(vector<Users> &users);
-void Update_csv_from_books(vector<Books> &books);
+void Update_csv_from_books(vector<Books *> &books);
 void add_issued_book_data(string data);
 void Update_csv_from_issued_books(vector<Issued_books> &issued_books);
 int get_index_of_issued_book(string id);
 int does_the_issued_book_exists(string id);
 int current_no = 0;
 
-void Update_Books(vector<Books> &books)
+void Update_Books(vector<Books *> &books)
 {
     cout << "Update_Books called" << endl;
     ifstream Books_data("Book_data.csv");
     string s = "";
     string arr[8];
-    getline(Books_data, s);
+    getline(Books_data, s); // Skip header
     s = "";
     while (getline(Books_data, s))
     {
@@ -666,13 +666,49 @@ void Update_Books(vector<Books> &books)
             arr[i] = word;
             i++;
         }
-        // int index = stoi(arr[0]);
-        // cout << "index = " << index << endl;
-        Books temp(arr);
-        // temp.display_user_data();
-        books.push_back(temp);
-        // books[current_no_books].display_book_data();
-        current_no_books++;
+
+        // Create appropriate derived class based on genre
+        Books *temp = nullptr;
+        string genre = arr[2];
+
+        if (genre == "Educational book")
+        {
+            temp = new Educational_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+        else if (genre == "Horror book")
+        {
+            temp = new Horror_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+        else if (genre == "Adventure book")
+        {
+            temp = new Adventure_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+        else if (genre == "Fantasy book")
+        {
+            temp = new Fantasy_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+        else if (genre == "Science Fiction book")
+        {
+            temp = new Science_Fiction_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+        else if (genre == "Mystery book")
+        {
+            temp = new Mystery_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+        else if (genre == "Thriller & Suspense book")
+        {
+            temp = new Thriller_Suspense_book(arr[0], arr[1], arr[3], stoi(arr[4]));
+        }
+
+        if (temp != nullptr)
+        {
+            books.push_back(temp);
+            current_no_books++;
+        }
+        else
+        {
+            cout << "Warning: Unknown book genre '" << genre << "'" << endl;
+        }
     }
     Books_data.close();
 }
@@ -753,7 +789,7 @@ int get_no_of_lines(ifstream &file_name)
     return no_of_lines;
 }
 
-void Add_Book(vector<Books> &books)
+void Add_Book(vector<Books *> &books)
 {
     Books *book;
     // ifstream Book_data("Book_data.csv");
@@ -762,8 +798,10 @@ void Add_Book(vector<Books> &books)
     cout << "Book Name : ";
     cin.ignore();
     getline(cin, Name);
+    Name = input_check(Name);
     cout << "Author : ";
     getline(cin, Author);
+    Author = input_check(Author);
     cout << "GENRE :" << endl;
     while (k != 1 && k != 2 && k != 3 && k != 4 && k != 5 && k != 6 && k != 7 && k != 8 && k != 9 && k != 10 || k != 11)
     {
@@ -774,14 +812,11 @@ void Add_Book(vector<Books> &books)
         cout << ">>>    5. Mystery Book" << endl;
         cout << ">>>    6. Horror Book" << endl;
         cout << ">>>    7. Thriller & Suspense Book" << endl;
-        cout << ">>>    8. Historical Fiction Book" << endl;
-        cout << ">>>    9. Romance Book" << endl;
-        cout << ">>>    10. Graphic Novel" << endl;
-        cout << ">>>    11. Other" << endl
+        cout << ">>>    8. Other" << endl
              << endl;
         cout << " --->>> Please enter your choice : ";
         cin >> temp;
-        if (temp == "1" || temp == "2" || temp == "3" || temp == "4" || temp == "5" || temp == "6" || temp == "7" || temp == "8" || temp == "9" || temp == "10" || temp == "11")
+        if (temp == "1" || temp == "2" || temp == "3" || temp == "4" || temp == "5" || temp == "6" || temp == "7" || temp == "8")
         {
             // cout << "You have entered a valid number." << endl;
             k = stoi(temp);
@@ -789,19 +824,21 @@ void Add_Book(vector<Books> &books)
         }
         else
         {
-            cout << "*****You have not entered a valid number*****" << endl;
+            cout << "You have not entered a valid number" << endl;
             continue;
         }
     }
-    if (k == 11)
+    if (k == 8)
     {
         cout << ">-- Genre = ";
         cin.ignore();
         getline(cin, Genre);
+        Genre = input_check(Genre);
     }
     cout << "SUBJECT : ";
     cin.ignore();
     getline(cin, Subject);
+    Subject = input_check(Subject);
     cout << "No of books: ";
     cin >> no;
     int i = does_the_book_exists(Name);
@@ -819,12 +856,12 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Educational_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Educational_book *)book;
-            educational_books.push_back(*tempp);
+            educational_books.push_back(tempp);
             cout << "Edu Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -833,12 +870,12 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Adventure_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Adventure_book *)book;
-            adventure_books.push_back(*tempp);
+            adventure_books.push_back(tempp);
             cout << "Adventure Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -847,12 +884,12 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Fantasy_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Fantasy_book *)book;
-            fantasy_books.push_back(*tempp);
+            fantasy_books.push_back(tempp);
             cout << "Fantasy Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -861,12 +898,12 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Science_Fiction_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Science_Fiction_book *)book;
-            science_fiction_books.push_back(*tempp);
+            science_fiction_books.push_back(tempp);
             cout << "Sci-Fi Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -875,12 +912,12 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Mystery_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Mystery_book *)book;
-            mystery_books.push_back(*tempp);
+            mystery_books.push_back(tempp);
             cout << "Mystery Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -889,12 +926,12 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Horror_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Horror_book *)book;
-            horror_books.push_back(*tempp);
+            horror_books.push_back(tempp);
             cout << "Horror Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -903,68 +940,26 @@ void Add_Book(vector<Books> &books)
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Thriller_Suspense_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Thriller_Suspense_book *)book;
-            thriller_suspense_books.push_back(*tempp);
+            thriller_suspense_books.push_back(tempp);
             cout << "Thriller & Suspense Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
     case 8:
-        book = new Historical_Fiction_book(Name, Author, Subject, no);
-        if (book != nullptr)
-        {
-            cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
-            Historical_Fiction_book *tempp;
-            // Converting the base class pointer to derived class pointer
-            // to store in the specific vector
-            tempp = (Historical_Fiction_book *)book;
-            historical_fiction_books.push_back(*tempp);
-            cout << "Historical Fiction Book data = " << tempp->get_data_in_string() << endl;
-        }
-        break;
-    case 9:
-        book = new Romance_Book(Name, Author, Subject, no);
-        if (book != nullptr)
-        {
-            cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
-            Romance_Book *tempp;
-            // Converting the base class pointer to derived class pointer
-            // to store in the specific vector
-            tempp = (Romance_Book *)book;
-            romance_books.push_back(*tempp);
-            cout << "Romantic Book data = " << tempp->get_data_in_string() << endl;
-        }
-        break;
-    case 10:
-        book = new Graphic_Novel(Name, Author, Subject, no);
-        if (book != nullptr)
-        {
-            cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
-            Graphic_Novel *tempp;
-            // Converting the base class pointer to derived class pointer
-            // to store in the specific vector
-            tempp = (Graphic_Novel *)book;
-            graphic_novels.push_back(*tempp);
-            cout << "Graphic Book data = " << tempp->get_data_in_string() << endl;
-        }
-        break;
-    case 11:
         book = new Other_book(Name, Author, Genre, Subject, no);
         if (book != nullptr)
         {
             cout << "Book data = " << book->get_data_in_string() << endl;
-            books.push_back(*book);
+            books.push_back(book);
             Other_book *tempp;
             // Converting the base class pointer to derived class pointer
             // to store in the specific vector
             tempp = (Other_book *)book;
-            Other_books.push_back(*tempp);
+            other_books.push_back(tempp);
             cout << "Other Book data = " << tempp->get_data_in_string() << endl;
         }
         break;
@@ -973,30 +968,25 @@ void Add_Book(vector<Books> &books)
         break;
     }
 
-    // getline(cin, Genre);
-    // switch()
-    // Book_data.close();
-    // Books tempp(Name, Author, Genre, Subject, no);
-    // books.push_back(tempp);
-
     ofstream Book_data_edit("Book_data.csv", ios::app);
-    Book_data_edit << books[current_no_books].get_data_in_string() << endl;
+    Book_data_edit << books[current_no_books]->get_data_in_string() << endl;
     current_no_books++;
     Book_data_edit.close();
 }
-void Remove_Book(vector<Books> &books)
+void Remove_Book(vector<Books *> &books)
 {
     cout << "Remove_Book called" << endl;
     string name;
     cout << "Name: ";
     cin.ignore();
     getline(cin, name);
+    name = input_check(name);
     cout << "Entered name = " << name;
 
     int i = 0;
     while (i < books.size())
     {
-        string lower_b_n = books[i].name, lname = name;
+        string lower_b_n = books[i]->name, lname = name;
         transform(lower_b_n.begin(), lower_b_n.end(), lower_b_n.begin(), ::tolower);
         transform(lname.begin(), lname.end(), lname.begin(), ::tolower);
         if (lower_b_n == lname)
@@ -1023,13 +1013,17 @@ void Add_User(vector<Users> &users)
     cout << "Name : ";
     cin.ignore();
     getline(cin, name);
+    name = input_check(name);
     cout << "ID : ";
     getline(cin, id);
+    id = input_check(id);
     transform(id.begin(), id.end(), id.begin(), ::tolower);
     cout << "Phone : ";
     getline(cin, phone);
+    phone = input_check(phone);
     cout << "Email : ";
     getline(cin, email);
+    email = input_check(email);
     int index = does_the_user_exists(id);
     if (index != -1)
     {
@@ -1079,15 +1073,17 @@ void Remove_User(vector<Users> &users)
     }
     return;
 }
-void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books)
+void Allocate_Book_to_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books)
 {
     string user_id, book_name;
     cout << "Allocate_Book_to_User called" << endl;
     cout << "Enter user id: ";
     cin.ignore();
     getline(cin, user_id);
+    user_id = input_check(user_id);
     cout << "Enter book name: ";
     getline(cin, book_name);
+    book_name = input_check(book_name);
     int user_index = does_the_user_exists(user_id);
     // cout<<"1. Users.size = "<<users.size()<<endl;
     if (user_index == -1)
@@ -1096,7 +1092,7 @@ void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Is
         return;
     }
     int book_index = does_the_book_exists(book_name);
-    int no_of_books = books[book_index].get_available_no_books();
+    int no_of_books = books[book_index]->get_available_no_books();
     if (book_index == -1)
     {
         cout << "Book doesn't exists" << endl;
@@ -1109,7 +1105,7 @@ void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Is
     }
     // cout<<"2. Users.size = "<<users.size()<<endl;
     cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
-    cout << "BOOK DATA = " << books[book_index].get_data_in_string() << endl;
+    cout << "BOOK DATA = " << books[book_index]->get_data_in_string() << endl;
 
     Issued_books temp(book_name, user_id);
     issued_books.push_back(temp);
@@ -1124,19 +1120,20 @@ void Allocate_Book_to_User(vector<Users> &users, vector<Books> &books, vector<Is
     users[user_index].show_all_issued_books_id();
     // cout<<"6. Users.size = "<<users.size()<<endl;
     Update_csv_from_users(users);
-    books[book_index].add_ongoing_allocate_users();
+    books[book_index]->add_ongoing_allocate_users();
     Update_csv_from_books(books);
 
     // cout<<"7. Users.size = "<<users.size()<<endl;
     return;
 }
-void Deallocate_Book_from_User(vector<Users> &users, vector<Books> &books, vector<Issued_books> &issued_books)
+void Deallocate_Book_from_User(vector<Users> &users, vector<Books *> &books, vector<Issued_books> &issued_books)
 {
     cout << "Deallocate_Book_from_User called" << endl;
     string issued_book_id;
     cout << "Enter Book_issue_ID = ";
     cin.ignore();
     getline(cin, issued_book_id);
+    issued_book_id = input_check(issued_book_id);
     int issued_book_index = does_the_issued_book_exists(issued_book_id);
     if (issued_book_index == -1)
     {
@@ -1160,9 +1157,9 @@ void Deallocate_Book_from_User(vector<Users> &users, vector<Books> &books, vecto
         return;
     }
     cout << "USER DATA = " << users[user_index].get_data_in_string() << endl;
-    cout << "BOOK DATA = " << books[book_index].get_data_in_string() << endl;
+    cout << "BOOK DATA = " << books[book_index]->get_data_in_string() << endl;
     users[user_index].deallocate_book_id(issued_book_id);
-    books[book_index].remove_ongoing_allocate_users();
+    books[book_index]->remove_ongoing_allocate_users();
     issued_books[issued_book_index].book_submitted();
     Update_csv_from_users(users);
     Update_csv_from_books(books);
@@ -1186,12 +1183,12 @@ void History_of_User(vector<Users> &users, string id)
         cout << "User not found" << endl;
     }
 }
-void History_of_Book(vector<Books> &books, string name)
+void History_of_Book(vector<Books *> &books, string name)
 {
     int index = does_the_book_exists(name);
     if (index != -1)
     {
-        books[index].display_book_data();
+        books[index]->display_book_data();
     }
     else
     {
@@ -1235,8 +1232,8 @@ int does_the_book_exists(string name)
     while (i < current_no_books)
     {
         cout << "i = " << i << endl;
-        cout << "books[i].name = " << books[i].name << endl;
-        s1 = books[i].name, s2 = books[i].name;
+        cout << "books[i]->name = " << books[i]->name << endl;
+        s1 = books[i]->name, s2 = books[i]->name;
         transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
         transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
         if (s1 == upper_name || s2 == lower_name)
@@ -1261,14 +1258,14 @@ void show_all_users(vector<Users> &users)
         i++;
     }
 }
-void show_all_books(vector<Books> &books)
+void show_all_books(vector<Books *> &books)
 {
     int i = 0;
     cout << "books.size() = " << books.size() << endl;
     while (i < books.size())
     {
         cout << "i = " << i << " - ";
-        books[i].display_book_data();
+        books[i]->display_book_data();
         i++;
     }
 }
@@ -1339,7 +1336,7 @@ void Remove_user_from_csv(vector<Users> &users, string id)
     }
     User_data_edit.close();
 }
-void Remove_book_from_csv(vector<Books> &books, string name)
+void Remove_book_from_csv(vector<Books *> &books, string name)
 {
     cout << "Remove_book_from_csv called" << endl;
     vector<string> lines;
@@ -1408,7 +1405,7 @@ void Update_csv_from_users(vector<Users> &users)
     }
     User_data_edit.close();
 }
-void Update_csv_from_books(vector<Books> &books)
+void Update_csv_from_books(vector<Books *> &books)
 {
     ofstream Book_data_edit("Book_data.csv");
     Book_data_edit << "BOOK_NAME,AUTHOR,GENRE,SUBJECT,OV_ALLOCATED_USER_NO,ONGOING_ALLOCATED_USER_NO" << endl;
@@ -1416,7 +1413,7 @@ void Update_csv_from_books(vector<Books> &books)
     int i = 0;
     while (i < books.size())
     {
-        s = books[i].get_data_in_string();
+        s = books[i]->get_data_in_string();
         Book_data_edit << s << endl;
         i++;
     }
@@ -1499,10 +1496,51 @@ int does_the_issued_book_exists(string id)
     return -1;
 }
 
+void Update_users_from_csv(vector<Users> &users)
+{
+    if (users.size() != 0)
+    {
+        int i = 0;
+        while (i < users.size())
+        {
+            users.erase(users.begin() + i);
+            i++;
+        }
+    }
+    Update_users(users);
+}
+
+string replace(string s, char c1, char c2)
+{
+    int l = s.length();
+
+    // loop to traverse in the string
+    for (int i = 0; i < l; i++)
+    {
+        // check for c1 and replace
+        if (s[i] == c1)
+            s[i] = c2;
+
+        // check for c2 and replace
+        else if (s[i] == c2)
+            s[i] = c1;
+    }
+    return s;
+}
+string input_check(string input)
+{
+    char del = ',';
+    int c = count(input.begin(), input.end(), del);
+    if (c > 0)
+    {
+        input = replace(input, ',', '~');
+    }
+    return input;
+}
 int main()
 {
 
-    string id, name;
+    string id, name, temp = "";
     int index;
     // cout << "Horror_book::no_of_horror_books: " << Horror_book::no_of_horror_books << endl;
     Update_users(users);
@@ -1511,32 +1549,32 @@ int main()
     int n;
     while (n != 0)
     {
-        cout << " *************************************************** " << endl
+        cout << " ****************************************************************************************** " << endl
              << endl;
-        cout << "> Enter 0 to exit" << endl;                          // DONE
-        cout << "> Enter 1 to Add Book" << endl;                      // DONE
-        cout << "> Enter 2 to Remove Book" << endl;                   // DONE
-        cout << "> Enter 3 to Add User" << endl;                      // DONE
-        cout << "> Enter 4 to Remove User" << endl;                   // DONE
-        cout << "> Enter 5 to Allocate Book to User" << endl;         // DONE
-        cout << "> Enter 6 to Deallocate Book to User" << endl;       // WORKING
-        cout << "> Enter 7 to History of User" << endl;               // DONE
-        cout << "> Enter 8 to History of Book" << endl;               // DONE
-        cout << "> Enter 9 to Show all Users" << endl;                // DONE
-        cout << "> Enter 10 to Show all Books" << endl;               // DONE
-        cout << "> Enter 11 to Show all Issued Books" << endl;        // DONE
-        cout << "> Enter 12 to Update csv from users" << endl;        // DONE
-        cout << "> Enter 13 to Update csv from books" << endl;        // DONE
-        cout << "> Enter 14 to Update csv from issued_books" << endl; // DONE
-        cout << "> Enter 15 to Show no of users" << endl;             // DONE
-        cout << "> Enter 16 to Show no of books" << endl;             // DONE
-        cout << "> Enter 17 to Show no of issued_books" << endl;      // DONE
-        cout << "> Enter 18 to Get data of issued book id" << endl;   // DONE
-        cout << "> Enter 19 to Update users from csv" << endl;        // DONE
-        cout << "> Enter 20 to Update books from csv" << endl;        // DONE
-        cout << "> Enter 21 to Update issued_books from csv" << endl  // DONE
+        cout << "---->                              Enter 0 to exit" << endl;                          // DONE
+        cout << "---->                              Enter 1 to Add Book" << endl;                      // DONE
+        cout << "---->                              Enter 2 to Remove Book" << endl;                   // DONE
+        cout << "---->                              Enter 3 to Add User" << endl;                      // DONE
+        cout << "---->                              Enter 4 to Remove User" << endl;                   // DONE
+        cout << "---->                              Enter 5 to Allocate Book to User" << endl;         // DONE
+        cout << "---->                              Enter 6 to Deallocate Book to User" << endl;       // DONE
+        cout << "---->                              Enter 7 to History of User" << endl;               // DONE
+        cout << "---->                              Enter 8 to History of Book" << endl;               // DONE
+        cout << "---->                              Enter 9 to Show all Users" << endl;                // DONE
+        cout << "---->                              Enter 10 to Show all Books" << endl;               // DONE
+        cout << "---->                              Enter 11 to Show all Issued Books" << endl;        // DONE
+        cout << "---->                              Enter 12 to Update csv from users" << endl;        // DONE
+        cout << "---->                              Enter 13 to Update csv from books" << endl;        // DONE
+        cout << "---->                              Enter 14 to Update csv from issued_books" << endl; // DONE
+        cout << "---->                              Enter 15 to Show no of users" << endl;             // DONE
+        cout << "---->                              Enter 16 to Show no of books" << endl;             // DONE
+        cout << "---->                              Enter 17 to Show no of issued_books" << endl;      // DONE
+        cout << "---->                              Enter 18 to Get data of issued book id" << endl;   // DONE
+        cout << "---->                              Enter 19 to Update users from csv" << endl;        // DONE
+        cout << "---->                              Enter 20 to Update books from csv" << endl;        // DONE
+        cout << "---->                              Enter 21 to Update issued_books from csv" << endl  // DONE
              << endl;
-        cout << " *************************************************** " << endl;
+        cout << " ****************************************************************************************** " << endl;
         cout << " Enter your choice :: ";
         cin >> n;
         switch (n)
@@ -1566,12 +1604,14 @@ int main()
             cin.ignore();
             cout << "Id of User to find: ";
             getline(cin, id);
+            id = input_check(id);
             History_of_User(users, id);
             break;
         case 8:
             cin.ignore();
             cout << "Name of book to find: ";
             getline(cin, name);
+            name = input_check(name);
             History_of_Book(books, name);
             break;
         case 9:
@@ -1609,6 +1649,7 @@ int main()
             cout << "Issued_Book ID = ";
             cin.ignore();
             getline(cin, id);
+            id = input_check(id);
             index = does_the_issued_book_exists(id);
             if (index == -1)
             {
@@ -1618,7 +1659,7 @@ int main()
             break;
         case 19:
             // string temp = "";
-            Update_users(users);
+            Update_users_from_csv(users);
             cout << "Users updated from csv";
             break;
         case 20:
@@ -1631,8 +1672,15 @@ int main()
             Update_Issued_Books(issued_books);
             cout << "Issued Books updated from csv";
             break;
+        case 22:
+            cin.ignore();
+            getline(cin, temp);
+            cout << input_check(temp) << endl;
+            break;
         default:
-            cout << "Invalid Input" << endl;
+            cout
+                << "Invalid Input"
+                << endl;
             break;
         }
     }
